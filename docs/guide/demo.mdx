@@ -6,6 +6,7 @@ import { DemoBasic } from '../../src/demo/DemoBasic';
 import { DemoSelect } from '../../src/demo/DemoSelect';
 import { DemoMultiLevel } from '../../src/demo/DemoMultiLevel';
 import { DemoLineStyle } from '../../src/demo/DemoLineStyle';
+import { DemoCustomActions } from '../../src/demo/DemoCustomActions';
 
 # 在线演示
 
@@ -187,6 +188,94 @@ const columns: ColumnConfig[] = [
   mkInput('服务', 'service', 100, true),
   mkInput('实例', 'instance', 100, true),
   mkInput('配置', 'config', 120, false),
+];
+
+export function App() {
+  const [value, setValue] = useState<any[]>([]);
+  return <CascadingInput columns={columns} value={value} onChange={setValue} />;
+}
+```
+
+## 自定义操作按钮
+
+通过 `addRender` 和 `deleteRender` 自定义"添加"和"删除"按钮的样式，按钮位置由组件固定控制（添加在单元格下方，删除在行末尾）。
+
+<DemoCustomActions />
+
+```tsx
+import { useState } from 'react';
+import { CascadingInput } from 'react-cascading-input';
+import 'react-cascading-input/styles';
+import type { ColumnConfig } from 'react-cascading-input';
+
+const addBtnStyle: React.CSSProperties = {
+  padding: '2px 12px', border: '1px solid #1890ff', borderRadius: 4,
+  background: '#e6f7ff', color: '#1890ff', fontSize: 12, cursor: 'pointer',
+};
+
+const deleteBtnStyle: React.CSSProperties = {
+  padding: '2px 12px', border: '1px solid #ff4d4f', borderRadius: 4,
+  background: '#fff1f0', color: '#ff4d4f', fontSize: 12, cursor: 'pointer',
+};
+
+const columns: ColumnConfig[] = [
+  {
+    title: '训练任务',
+    dataIndex: 'product',
+    width: 120,
+    hasAdd: true,
+    addRender: ({ onClick }) => (
+      <button type="button" style={addBtnStyle} onClick={onClick}>+ 添加</button>
+    ),
+    deleteRender: ({ onClick }) => (
+      <button type="button" style={deleteBtnStyle} onClick={onClick}>删除</button>
+    ),
+    render: ({ value, onChange, title }) => (
+      <input
+        style={{ width: '100%', padding: '4px 8px', border: '1px solid #d9d9d9', borderRadius: 4, fontSize: 14, height: 32 }}
+        placeholder={`请输入${title}`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    ),
+  },
+  {
+    title: '训练集群',
+    dataIndex: 'region',
+    width: 120,
+    hasAdd: true,
+    addRender: ({ onClick }) => (
+      <button type="button" style={addBtnStyle} onClick={onClick}>+ 添加</button>
+    ),
+    deleteRender: ({ onClick }) => (
+      <button type="button" style={deleteBtnStyle} onClick={onClick}>删除</button>
+    ),
+    render: ({ value, onChange, title }) => (
+      <input
+        style={{ width: '100%', padding: '4px 8px', border: '1px solid #d9d9d9', borderRadius: 4, fontSize: 14, height: 32 }}
+        placeholder={`请输入${title}`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    ),
+  },
+  {
+    title: '框架版本',
+    dataIndex: 'spec',
+    width: 180,
+    hasAdd: false,
+    deleteRender: ({ onClick }) => (
+      <button type="button" style={deleteBtnStyle} onClick={onClick}>删除</button>
+    ),
+    render: ({ value, onChange, title }) => (
+      <input
+        style={{ width: '100%', padding: '4px 8px', border: '1px solid #d9d9d9', borderRadius: 4, fontSize: 14, height: 32 }}
+        placeholder={`请输入${title}`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    ),
+  },
 ];
 
 export function App() {

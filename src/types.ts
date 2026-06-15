@@ -43,6 +43,12 @@ export interface CellRenderProps {
     id: string;
 }
 
+/** 操作按钮渲染参数 */
+export interface ActionRenderProps {
+    /** 点击回调 */
+    onClick: () => void;
+}
+
 /** 列配置 */
 export interface ColumnConfig {
     /** 列标题 */
@@ -55,6 +61,10 @@ export interface ColumnConfig {
     hasAdd: boolean;
     /** 自定义单元格渲染，接收 CellRenderProps，返回 ReactNode */
     render: (props: CellRenderProps) => ReactNode;
+    /** 自定义"添加"按钮渲染，位置固定在单元格下方。不传则使用默认样式 */
+    addRender?: (props: ActionRenderProps) => ReactNode;
+    /** 自定义"删除"按钮渲染（仅叶子层级生效），位置固定在行末尾。不传则使用默认样式 */
+    deleteRender?: (props: ActionRenderProps) => ReactNode;
 }
 
 /** CascadingInput 组件 Props */

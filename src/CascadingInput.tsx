@@ -185,13 +185,17 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
                                 })}
                                 {col.hasAdd && (
                                     <div className="tree-cell-action">
-                                        <button
-                                            type="button"
-                                            className="tree-cell-action-btn"
-                                            onClick={() => handleAdd(currentPath, level)}
-                                        >
-                                            添加
-                                        </button>
+                                        {col.addRender
+                                            ? col.addRender({ onClick: () => handleAdd(currentPath, level) })
+                                            : (
+                                                <button
+                                                    type="button"
+                                                    className="tree-cell-action-btn"
+                                                    onClick={() => handleAdd(currentPath, level)}
+                                                >
+                                                    添加
+                                                </button>
+                                            )}
                                     </div>
                                 )}
                             </div>
@@ -200,14 +204,18 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
                                 renderLevel(node.children, level + 1, currentPath)}
 
                             {isLeaf && (
-                                <button
-                                    type="button"
-                                    className="tree-delete-btn"
-                                    onClick={() => handleDelete(currentPath)}
-                                    title="删除整行"
-                                >
-                                    删除
-                                </button>
+                                col.deleteRender
+                                    ? col.deleteRender({ onClick: () => handleDelete(currentPath) })
+                                    : (
+                                        <button
+                                            type="button"
+                                            className="tree-delete-btn"
+                                            onClick={() => handleDelete(currentPath)}
+                                            title="删除整行"
+                                        >
+                                            删除
+                                        </button>
+                                    )
                             )}
                         </div>
                     );

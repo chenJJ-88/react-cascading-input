@@ -157,6 +157,8 @@ const columns: ColumnConfig[] = [
 | `width`     | `number`                                | ✓        | 列宽度（px）                         |
 | `hasAdd`    | `boolean`                               | ✓        | 是否显示"添加"按钮                   |
 | `render`    | `(props: CellRenderProps) => ReactNode` | ✓        | 自定义单元格渲染                     |
+| `addRender`    | `(props: ActionRenderProps) => ReactNode` |        | 自定义"添加"按钮渲染，位置固定在单元格下方 |
+| `deleteRender` | `(props: ActionRenderProps) => ReactNode` |        | 自定义"删除"按钮渲染（仅叶子层级），位置固定在行末尾 |
 
 ### CellRenderProps
 

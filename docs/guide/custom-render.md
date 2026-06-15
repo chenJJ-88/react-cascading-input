@@ -68,4 +68,4 @@ render: ({ value, onChange, title, hasAdd, onAdd, isLeaf, onDelete }) => (
 ),
 ```
 
-> 组件本身仍会在 `render` 外侧渲染默认的"添加"和"删除"按钮（当 `hasAdd` 或 `isLeaf` 为 true 时）。如果你想完全自己控制，可以在 `render` 里处理，但需注意这些按钮在 `render` 作用域之外——目前组件不提供隐藏默认按钮的开关，你需要通过 CSS 覆盖。
+> 组件默认在单元格下方渲染"添加"按钮，在行末尾渲染"删除"按钮。你可以通过 `addRender` 和 `deleteRender` 自定义按钮样式，但按钮位置由组件固定控制。

@@ -20,6 +20,8 @@
 | `width` | `number` | ✓ | 列宽（px） |
 | `hasAdd` | `boolean` | ✓ | 是否在该列显示"添加同级"按钮 |
 | `render` | `(props: CellRenderProps) => ReactNode` | ✓ | 自定义渲染函数，必填 |
+| `addRender` | `(props: ActionRenderProps) => ReactNode` | | 自定义"添加"按钮渲染，位置固定在单元格下方。不传则使用默认样式 |
+| `deleteRender` | `(props: ActionRenderProps) => ReactNode` | | 自定义"删除"按钮渲染（仅叶子层级），位置固定在行末尾。不传则使用默认样式 |
 
 ## CellRenderProps
 
@@ -40,6 +42,14 @@
 | `isLeaf` | `boolean` | 是否为最后一列（叶子层级） |
 | `width` | `number` | 当前列宽 |
 | `id` | `string` | 当前节点 id（Canvas 连线依赖 `data-cell-id` 属性） |
+
+## ActionRenderProps
+
+`addRender` / `deleteRender` 函数接收的参数：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `onClick` | `() => void` | 点击回调，触发添加或删除操作 |
 
 ## TreeNode
 
