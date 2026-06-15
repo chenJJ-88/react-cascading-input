@@ -1,5 +1,6 @@
 import type React from 'react';
-import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { useCanvasLines } from './hooks/useCanvasLines';
 import type { CascadingInputProps, ColumnConfig, TreeNode } from './types';
 
 const genId = () => Math.random().toString(36).substring(2, 9);
@@ -23,6 +24,7 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
     lineStyle = 'curve',
     lineColor = '#d9d9d9',
     lineWidth = 1.5,
+    showSource = false,
 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -33,74 +35,15 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
         }
     }, [value, columns, onChange]);
 
-    const drawLines = useCallback(() => {
-        const canvas = canvasRef.current;
-        const container = containerRef.current;
-        if (!canvas || !container || !value.length) { return; }
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) { return; }
-
-        const rect = container.getBoundingClientRect();
-        if (canvas.width !== rect.width) { canvas.width = rect.width; }
-        if (canvas.height !== rect.height) { canvas.height = rect.height; }
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = lineColor;
-        ctx.lineWidth = lineWidth;
-
-        const drawNodeLines = (nodes: TreeNode[]) => {
-            nodes.forEach((node) => {
-                if (node.children && node.children.length > 0) {
-                    const parentEl = container.querySelector(`[data-cell-id="${node.id}"]`);
-                    if (!parentEl) { return; }
-                    const pRect = parentEl.getBoundingClientRect();
-                    const startX = pRect.right - rect.left;
-                    const startY = pRect.top - rect.top + 16;
-
-                    node.children.forEach((child) => {
-                        const childEl = container.querySelector(`[data-cell-id="${child.id}"]`);
-                        if (!childEl) { return; }
-                        const cRect = childEl.getBoundingClientRect();
-                        const endX = cRect.left - rect.left;
-                        const endY = cRect.top - rect.top + 16;
-
-                        ctx.beginPath();
-                        ctx.moveTo(startX, startY);
-
-                        if (lineStyle === 'straight') {
-                            ctx.lineTo(endX - 20, startY);
-                            ctx.lineTo(endX - 20, endY);
-                            ctx.lineTo(endX, endY);
-                        } else {
-                            const o = 20;
-                            ctx.bezierCurveTo(startX + o, startY, endX - o, endY, endX, endY);
-                        }
-                        ctx.stroke();
-                    });
-                    drawNodeLines(node.children);
-                }
-            });
-        };
-
-        drawNodeLines(value);
-    }, [value, lineStyle, lineColor, lineWidth]);
-
-    useLayoutEffect(() => {
-        drawLines();
-
-        const container = containerRef.current;
-        let ro: ResizeObserver | null = null;
-        if (container && typeof ResizeObserver !== 'undefined') {
-            ro = new ResizeObserver(() => drawLines());
-            ro.observe(container);
-        }
-        window.addEventListener('resize', drawLines);
-        return () => {
-            ro?.disconnect();
-            window.removeEventListener('resize', drawLines);
-        };
-    }, [drawLines]);
+    useCanvasLines({
+        canvasRef,
+        containerRef,
+        value,
+        lineStyle,
+        lineColor,
+        lineWidth,
+        showSource,
+    });
 
     const updateTreeValue = (nodes: TreeNode[], path: string[], val: string, dataIndex: string): TreeNode[] => {
         const currentId = path[0];

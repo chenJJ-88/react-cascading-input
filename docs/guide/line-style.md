@@ -44,6 +44,16 @@
 />
 ```
 
+## showSource 溯源动画
+
+开启 `showSource` 后，连线上的小圆点粒子会从子节点沿线条流向父节点，用 `requestAnimationFrame` 驱动动画循环，直观展示数据溯源关系：
+
+```tsx
+<CascadingInput columns={columns} value={value} onChange={setValue} showSource />
+```
+
+> 粒子颜色跟随 `lineColor`，运动路径跟随 `lineStyle`（贝塞尔曲线或折线）。
+
 ## 工作原理
 
 - Canvas 画布绝对定位，覆盖整个 `.tree-body` 容器

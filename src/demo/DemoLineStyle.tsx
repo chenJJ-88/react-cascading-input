@@ -48,6 +48,7 @@ export function DemoLineStyle() {
     const [lineStyle, setLineStyle] = useState<'curve' | 'straight'>('curve');
     const [lineColor, setLineColor] = useState('#d9d9d9');
     const [lineWidth, setLineWidth] = useState(1.5);
+    const [showSource, setShowSource] = useState(false);
 
     return (
         <div style={{ padding: '16px 0' }}>
@@ -72,6 +73,10 @@ export function DemoLineStyle() {
                     <input type="range" min={0.5} max={4} step={0.5} value={lineWidth} onChange={(e) => setLineWidth(Number(e.target.value))} style={{ marginLeft: 4, verticalAlign: 'middle' }} />
                     <span style={{ marginLeft: 4, color: '#666' }}>{lineWidth}px</span>
                 </label>
+                <label style={{ cursor: 'pointer' }}>
+                    <input type="checkbox" checked={showSource} onChange={(e) => setShowSource(e.target.checked)} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                    溯源动画
+                </label>
             </div>
 
             <CascadingInput
@@ -81,6 +86,7 @@ export function DemoLineStyle() {
                 lineStyle={lineStyle}
                 lineColor={lineColor}
                 lineWidth={lineWidth}
+                showSource={showSource}
             />
             <details style={{ marginTop: 16 }}>
                 <summary style={{ cursor: 'pointer', color: '#666', fontSize: 13 }}>查看数据</summary>

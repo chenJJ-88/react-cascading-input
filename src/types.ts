@@ -81,4 +81,6 @@ export interface CascadingInputProps {
     lineColor?: string;
     /** 关系线粗细，默认 1.5 */
     lineWidth?: number;
+    /** 是否显示汇聚源线，展示子节点从哪个父节点分裂出去 */
+    showSource?: boolean;
 }

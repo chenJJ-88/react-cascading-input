@@ -10,6 +10,7 @@
 | `lineStyle` | `'curve' \| 'straight'` | `'curve'` | 连线风格 |
 | `lineColor` | `string` | `'#d9d9d9'` | 连线颜色 |
 | `lineWidth` | `number` | `1.5` | 连线粗细（px） |
+| `showSource` | `boolean` | `false` | 开启溯源动画，线条上粒子从子节点流向父节点 |
 
 ## ColumnConfig
 

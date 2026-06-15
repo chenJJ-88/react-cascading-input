@@ -147,6 +147,7 @@ const columns: ColumnConfig[] = [
 | `lineStyle` | `'straight' \| 'curve'`       | `'curve'`   | 关系线样式       |
 | `lineColor` | `string`                      | `'#d9d9d9'` | 关系线颜色       |
 | `lineWidth` | `number`                      | `1.5`       | 关系线粗细       |
+| `showSource` | `boolean`                     | `false`     | 溯源动画，线条上粒子从子节点流向父节点 |
 
 ### ColumnConfig
 

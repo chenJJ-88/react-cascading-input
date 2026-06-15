@@ -69,3 +69,9 @@ render: ({ value, onChange, title, hasAdd, onAdd, isLeaf, onDelete }) => (
 ```
 
 > 组件默认在单元格下方渲染"添加"按钮，在行末尾渲染"删除"按钮。你可以通过 `addRender` 和 `deleteRender` 自定义按钮样式，但按钮位置由组件固定控制。
+
+## 性能提示
+
+当前组件采用完全受控模式（`value` + `onChange`），每次输入都会触发状态更新。对于常见的级联输入场景（几十行数据），这不会成为性能瓶颈。
+
+如果数据量非常大，建议在 `render` 中使用非受控组件（如 `defaultValue` + `ref`），或用 `React.memo` 包裹渲染函数，避免不必要的重渲染。

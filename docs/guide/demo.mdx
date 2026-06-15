@@ -5,8 +5,8 @@ title: 在线演示
 import { DemoBasic } from '../../src/demo/DemoBasic';
 import { DemoSelect } from '../../src/demo/DemoSelect';
 import { DemoMultiLevel } from '../../src/demo/DemoMultiLevel';
-import { DemoLineStyle } from '../../src/demo/DemoLineStyle';
 import { DemoCustomActions } from '../../src/demo/DemoCustomActions';
+import { DemoLineStyle } from '../../src/demo/DemoLineStyle';
 
 # 在线演示
 
@@ -15,6 +15,10 @@ import { DemoCustomActions } from '../../src/demo/DemoCustomActions';
 零 UI 库依赖，3 列基础示例，使用原生 `<input>` 元素渲染每列。
 
 <DemoBasic />
+
+<details>
+<summary>查看代码</summary>
+
 
 ```tsx
 import { useState } from 'react';
@@ -76,11 +80,18 @@ export function App() {
 }
 ```
 
+
+</details>
+
 ## 混合 input + select
 
 同一组件中混合使用 `<input>` 和 `<select>`，展示 `render` prop 的灵活性。4 层嵌套，训练集群和框架版本使用下拉选择。
 
 <DemoSelect />
+
+<details>
+<summary>查看代码</summary>
+
 
 ```tsx
 import { useState } from 'react';
@@ -158,11 +169,18 @@ export function App() {
 }
 ```
 
+
+</details>
+
 ## 5 层深度嵌套
 
 5 列层级嵌套，验证组件在更深层级下的连线表现和数据管理。
 
 <DemoMultiLevel />
+
+<details>
+<summary>查看代码</summary>
+
 
 ```tsx
 import { useState } from 'react';
@@ -196,11 +214,18 @@ export function App() {
 }
 ```
 
+
+</details>
+
 ## 自定义操作按钮
 
 通过 `addRender` 和 `deleteRender` 自定义"添加"和"删除"按钮的样式，按钮位置由组件固定控制（添加在单元格下方，删除在行末尾）。
 
 <DemoCustomActions />
+
+<details>
+<summary>查看代码</summary>
+
 
 ```tsx
 import { useState } from 'react';
@@ -284,11 +309,18 @@ export function App() {
 }
 ```
 
+
+</details>
+
 ## 连线样式定制
 
-实时切换连线样式（贝塞尔曲线 / 折线）、颜色和粗细。
+实时切换连线样式（贝塞尔曲线 / 折线）、颜色、粗细，以及开启溯源动画（线条上粒子从子节点流向父节点）。
 
 <DemoLineStyle />
+
+<details>
+<summary>查看代码</summary>
+
 
 ```tsx
 import { useState } from 'react';
@@ -322,10 +354,10 @@ export function App() {
   const [lineStyle, setLineStyle] = useState<'curve' | 'straight'>('curve');
   const [lineColor, setLineColor] = useState('#d9d9d9');
   const [lineWidth, setLineWidth] = useState(1.5);
+  const [showSource, setShowSource] = useState(false);
 
   return (
     <>
-      {/* 控制面板 */}
       <div style={{ marginBottom: 16, display: 'flex', gap: 16, alignItems: 'center' }}>
         <label>
           连线样式：
@@ -343,6 +375,10 @@ export function App() {
           <input type="range" min={0.5} max={4} step={0.5} value={lineWidth}
                  onChange={(e) => setLineWidth(Number(e.target.value))} />
         </label>
+        <label>
+          <input type="checkbox" checked={showSource} onChange={(e) => setShowSource(e.target.checked)} />
+          溯源动画
+        </label>
       </div>
 
       <CascadingInput
@@ -352,8 +388,12 @@ export function App() {
         lineStyle={lineStyle}
         lineColor={lineColor}
         lineWidth={lineWidth}
+        showSource={showSource}
       />
     </>
   );
 }
 ```
+
+
+</details>
