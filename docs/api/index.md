@@ -8,6 +8,8 @@
 | `value` | `TreeNode[]` | `[]` | 受控数据 |
 | `onChange` | `(value: TreeNode[]) => void` | — | 数据变更回调 |
 | `lineStyle` | `'curve' \| 'straight'` | `'curve'` | 连线风格 |
+| `lineColor` | `string` | `'#d9d9d9'` | 连线颜色 |
+| `lineWidth` | `number` | `1.5` | 连线粗细（px） |
 
 ## ColumnConfig
 
@@ -37,7 +39,7 @@
 | `onDelete` | `() => void` | 删除当前行（仅叶子层级有效） |
 | `isLeaf` | `boolean` | 是否为最后一列（叶子层级） |
 | `width` | `number` | 当前列宽 |
-| `id` | `string` | 当前节点 id |
+| `id` | `string` | 当前节点 id（Canvas 连线依赖 `data-cell-id` 属性） |
 
 ## TreeNode
 

@@ -3,11 +3,268 @@ title: 在线演示
 ---
 
 import { DemoBasic } from '../../src/demo/DemoBasic';
+import { DemoSelect } from '../../src/demo/DemoSelect';
+import { DemoMultiLevel } from '../../src/demo/DemoMultiLevel';
+import { DemoLineStyle } from '../../src/demo/DemoLineStyle';
 
 # 在线演示
 
 ## 原生 input
 
-零 UI 库依赖，使用原生 `<input>` 元素渲染每列。
+零 UI 库依赖，3 列基础示例，使用原生 `<input>` 元素渲染每列。
 
 <DemoBasic />
+
+```tsx
+import { useState } from 'react';
+import { CascadingInput } from 'react-cascading-input';
+import 'react-cascading-input/styles';
+import type { ColumnConfig } from 'react-cascading-input';
+
+const columns: ColumnConfig[] = [
+  {
+    title: '训练任务',
+    dataIndex: 'product',
+    width: 120,
+    hasAdd: true,
+    render: ({ value, onChange, title }) => (
+      <input
+        style={{ width: '100%', boxSizing: 'border-box', padding: '4px 8px',
+                 border: '1px solid #d9d9d9', borderRadius: 4, fontSize: 14, height: 32 }}
+        placeholder={`请输入${title}`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    ),
+  },
+  {
+    title: '训练集群',
+    dataIndex: 'region',
+    width: 120,
+    hasAdd: true,
+    render: ({ value, onChange, title }) => (
+      <input
+        style={{ width: '100%', boxSizing: 'border-box', padding: '4px 8px',
+                 border: '1px solid #d9d9d9', borderRadius: 4, fontSize: 14, height: 32 }}
+        placeholder={`请输入${title}`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    ),
+  },
+  {
+    title: '框架版本',
+    dataIndex: 'spec',
+    width: 180,
+    hasAdd: false,
+    render: ({ value, onChange, title }) => (
+      <input
+        style={{ width: '100%', boxSizing: 'border-box', padding: '4px 8px',
+                 border: '1px solid #d9d9d9', borderRadius: 4, fontSize: 14, height: 32 }}
+        placeholder={`请输入${title}`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    ),
+  },
+];
+
+export function App() {
+  const [value, setValue] = useState<any[]>([]);
+  return <CascadingInput columns={columns} value={value} onChange={setValue} />;
+}
+```
+
+## 混合 input + select
+
+同一组件中混合使用 `<input>` 和 `<select>`，展示 `render` prop 的灵活性。4 层嵌套，训练集群和框架版本使用下拉选择。
+
+<DemoSelect />
+
+```tsx
+import { useState } from 'react';
+import { CascadingInput } from 'react-cascading-input';
+import 'react-cascading-input/styles';
+import type { ColumnConfig } from 'react-cascading-input';
+
+const selectStyle: React.CSSProperties = {
+  width: '100%', boxSizing: 'border-box', padding: '4px 8px',
+  border: '1px solid #d9d9d9', borderRadius: 4, fontSize: 14, height: 32, background: '#fff',
+};
+
+const inputStyle: React.CSSProperties = {
+  width: '100%', boxSizing: 'border-box', padding: '4px 8px',
+  border: '1px solid #d9d9d9', borderRadius: 4, fontSize: 14, height: 32,
+};
+
+const columns: ColumnConfig[] = [
+  {
+    title: '训练任务',
+    dataIndex: 'product',
+    width: 120,
+    hasAdd: true,
+    render: ({ value, onChange, title }) => (
+      <input style={inputStyle} placeholder={`请输入${title}`} value={value} onChange={(e) => onChange(e.target.value)} />
+    ),
+  },
+  {
+    title: '训练集群',
+    dataIndex: 'region',
+    width: 130,
+    hasAdd: true,
+    render: ({ value, onChange, title }) => (
+      <select style={selectStyle} value={value || ''} onChange={(e) => onChange(e.target.value)}>
+        <option value="">请选择{title}</option>
+        <option value="beijing">北京</option>
+        <option value="shanghai">上海</option>
+        <option value="guangzhou">广州</option>
+      </select>
+    ),
+  },
+  {
+    title: '框架版本',
+    dataIndex: 'framework',
+    width: 130,
+    hasAdd: true,
+    render: ({ value, onChange, title }) => (
+      <select style={selectStyle} value={value || ''} onChange={(e) => onChange(e.target.value)}>
+        <option value="">请选择{title}</option>
+        <option value="pytorch">PyTorch</option>
+        <option value="tensorflow">TensorFlow</option>
+        <option value="mindspore">MindSpore</option>
+      </select>
+    ),
+  },
+  {
+    title: '训练阶段',
+    dataIndex: 'stage',
+    width: 120,
+    hasAdd: false,
+    render: ({ value, onChange, title }) => (
+      <select style={selectStyle} value={value || ''} onChange={(e) => onChange(e.target.value)}>
+        <option value="">请选择{title}</option>
+        <option value="preprocess">预处理</option>
+        <option value="training">训练中</option>
+        <option value="eval">评估</option>
+      </select>
+    ),
+  },
+];
+
+export function App() {
+  const [value, setValue] = useState<any[]>([]);
+  return <CascadingInput columns={columns} value={value} onChange={setValue} />;
+}
+```
+
+## 5 层深度嵌套
+
+5 列层级嵌套，验证组件在更深层级下的连线表现和数据管理。
+
+<DemoMultiLevel />
+
+```tsx
+import { useState } from 'react';
+import { CascadingInput } from 'react-cascading-input';
+import 'react-cascading-input/styles';
+import type { ColumnConfig } from 'react-cascading-input';
+
+const inputStyle: React.CSSProperties = {
+  width: '100%', boxSizing: 'border-box', padding: '4px 8px',
+  border: '1px solid #d9d9d9', borderRadius: 4, fontSize: 14, height: 32,
+};
+
+const mkInput = (title: string, dataIndex: string, width: number, hasAdd: boolean): ColumnConfig => ({
+  title, dataIndex, width, hasAdd,
+  render: ({ value, onChange }) => (
+    <input style={inputStyle} placeholder={`请输入${title}`} value={value} onChange={(e) => onChange(e.target.value)} />
+  ),
+});
+
+const columns: ColumnConfig[] = [
+  mkInput('项目', 'project', 100, true),
+  mkInput('环境', 'env', 100, true),
+  mkInput('服务', 'service', 100, true),
+  mkInput('实例', 'instance', 100, true),
+  mkInput('配置', 'config', 120, false),
+];
+
+export function App() {
+  const [value, setValue] = useState<any[]>([]);
+  return <CascadingInput columns={columns} value={value} onChange={setValue} />;
+}
+```
+
+## 连线样式定制
+
+实时切换连线样式（贝塞尔曲线 / 折线）、颜色和粗细。
+
+<DemoLineStyle />
+
+```tsx
+import { useState } from 'react';
+import { CascadingInput } from 'react-cascading-input';
+import 'react-cascading-input/styles';
+import type { ColumnConfig } from 'react-cascading-input';
+
+const columns: ColumnConfig[] = [
+  {
+    title: '训练任务', dataIndex: 'product', width: 120, hasAdd: true,
+    render: ({ value, onChange }) => (
+      <input placeholder="请输入训练任务" value={value} onChange={(e) => onChange(e.target.value)} />
+    ),
+  },
+  {
+    title: '训练集群', dataIndex: 'region', width: 120, hasAdd: true,
+    render: ({ value, onChange }) => (
+      <input placeholder="请输入训练集群" value={value} onChange={(e) => onChange(e.target.value)} />
+    ),
+  },
+  {
+    title: '框架版本', dataIndex: 'spec', width: 180, hasAdd: false,
+    render: ({ value, onChange }) => (
+      <input placeholder="请输入框架版本" value={value} onChange={(e) => onChange(e.target.value)} />
+    ),
+  },
+];
+
+export function App() {
+  const [value, setValue] = useState<any[]>([]);
+  const [lineStyle, setLineStyle] = useState<'curve' | 'straight'>('curve');
+  const [lineColor, setLineColor] = useState('#d9d9d9');
+  const [lineWidth, setLineWidth] = useState(1.5);
+
+  return (
+    <>
+      {/* 控制面板 */}
+      <div style={{ marginBottom: 16, display: 'flex', gap: 16, alignItems: 'center' }}>
+        <label>
+          连线样式：
+          <select value={lineStyle} onChange={(e) => setLineStyle(e.target.value as 'curve' | 'straight')}>
+            <option value="curve">贝塞尔曲线</option>
+            <option value="straight">折线</option>
+          </select>
+        </label>
+        <label>
+          连线颜色：
+          <input type="color" value={lineColor} onChange={(e) => setLineColor(e.target.value)} />
+        </label>
+        <label>
+          连线粗细：
+          <input type="range" min={0.5} max={4} step={0.5} value={lineWidth}
+                 onChange={(e) => setLineWidth(Number(e.target.value))} />
+        </label>
+      </div>
+
+      <CascadingInput
+        columns={columns}
+        value={value}
+        onChange={setValue}
+        lineStyle={lineStyle}
+        lineColor={lineColor}
+        lineWidth={lineWidth}
+      />
+    </>
+  );
+}
+```

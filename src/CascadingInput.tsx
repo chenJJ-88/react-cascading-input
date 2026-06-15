@@ -21,6 +21,8 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
     onChange,
     columns,
     lineStyle = 'curve',
+    lineColor = '#d9d9d9',
+    lineWidth = 1.5,
 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -44,8 +46,8 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
         if (canvas.height !== rect.height) { canvas.height = rect.height; }
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = '#d9d9d9';
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = lineColor;
+        ctx.lineWidth = lineWidth;
 
         const drawNodeLines = (nodes: TreeNode[]) => {
             nodes.forEach((node) => {
@@ -82,7 +84,7 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
         };
 
         drawNodeLines(value);
-    }, [value, lineStyle]);
+    }, [value, lineStyle, lineColor, lineWidth]);
 
     useLayoutEffect(() => {
         drawLines();

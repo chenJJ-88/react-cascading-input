@@ -1,6 +1,6 @@
 # 连线样式
 
-组件通过 Canvas 在父子节点之间绘制连接线，支持两种风格。
+组件通过 Canvas 在父子节点之间绘制连接线，支持两种风格和自定义外观。
 
 ## lineStyle
 
@@ -13,6 +13,35 @@
 
 ```tsx
 <CascadingInput columns={columns} value={value} onChange={setValue} lineStyle="straight" />
+```
+
+## lineColor
+
+通过 `lineColor` prop 自定义连线颜色，默认 `'#d9d9d9'`：
+
+```tsx
+<CascadingInput columns={columns} value={value} onChange={setValue} lineColor="#1890ff" />
+```
+
+## lineWidth
+
+通过 `lineWidth` prop 自定义连线粗细（px），默认 `1.5`：
+
+```tsx
+<CascadingInput columns={columns} value={value} onChange={setValue} lineWidth={2} />
+```
+
+## 组合使用
+
+```tsx
+<CascadingInput
+    columns={columns}
+    value={value}
+    onChange={setValue}
+    lineStyle="straight"
+    lineColor="#52c41a"
+    lineWidth={2}
+/>
 ```
 
 ## 工作原理
