@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react';
+import type { ReactNode } from 'react';
 
 /** 树节点数据结构 */
 export interface TreeNode {
@@ -49,18 +49,12 @@ export interface ColumnConfig {
     title: string;
     /** 数据字段名 */
     dataIndex: string;
-    /** 输入类型：input 或 select（不设 render 时由默认渲染器消费） */
-    type?: 'input' | 'select';
     /** 列宽度（px） */
     width: number;
     /** 该层级是否显示"添加"按钮 */
     hasAdd: boolean;
     /** 自定义单元格渲染，接收 CellRenderProps，返回 ReactNode */
-    render?: (props: CellRenderProps) => ReactNode;
-    /** 当 type='select' 时的选项列表 */
-    options?: Array<{ label: string; value: string }>;
-    /** 透传给默认渲染器内部 input/select 的额外 props */
-    inputProps?: InputHTMLAttributes<HTMLInputElement> | SelectHTMLAttributes<HTMLSelectElement>;
+    render: (props: CellRenderProps) => ReactNode;
 }
 
 /** CascadingInput 组件 Props */

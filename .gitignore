@@ -3,6 +3,7 @@ node_modules
 
 # build output
 dist
+doc_build
 
 # test coverage
 coverage

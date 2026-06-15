@@ -5,9 +5,33 @@ import { CascadingInput } from '../src';
 import type { ColumnConfig } from '../src/types';
 
 const columns: ColumnConfig[] = [
-    { title: '训练任务', dataIndex: 'product', width: 120, hasAdd: true },
-    { title: '训练集群', dataIndex: 'region', width: 120, hasAdd: true },
-    { title: '框架版本', dataIndex: 'spec', width: 180, hasAdd: false },
+    {
+        title: '训练任务',
+        dataIndex: 'product',
+        width: 120,
+        hasAdd: true,
+        render: ({ value, onChange, title }) => (
+            <input placeholder={`请输入${title}`} value={value} onChange={(e) => onChange(e.target.value)} />
+        ),
+    },
+    {
+        title: '训练集群',
+        dataIndex: 'region',
+        width: 120,
+        hasAdd: true,
+        render: ({ value, onChange, title }) => (
+            <input placeholder={`请输入${title}`} value={value} onChange={(e) => onChange(e.target.value)} />
+        ),
+    },
+    {
+        title: '框架版本',
+        dataIndex: 'spec',
+        width: 180,
+        hasAdd: false,
+        render: ({ value, onChange, title }) => (
+            <input placeholder={`请输入${title}`} value={value} onChange={(e) => onChange(e.target.value)} />
+        ),
+    },
 ];
 
 function TestWrapper() {
@@ -23,7 +47,7 @@ describe('CascadingInput', () => {
         expect(screen.getByText('框架版本')).toBeTruthy();
     });
 
-    it('默认模式应渲染输入框', () => {
+    it('应渲染 render 返回的输入框', () => {
         render(<TestWrapper />);
         const inputs = screen.getAllByPlaceholderText('请输入训练任务');
         expect(inputs.length).toBeGreaterThanOrEqual(1);
@@ -58,5 +82,4 @@ describe('CascadingInput', () => {
         const output = screen.getByTestId('output');
         expect(output.textContent).toContain('手机');
     });
-
 });
