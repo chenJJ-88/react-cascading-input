@@ -67,7 +67,7 @@ const columns: ColumnConfig[] = [
 
 export function App() {
   const [value, setValue] = useState([]);
-  return <CascadingInput columns={columns} value={value} onChange={setValue} />;
+  return <CascadingInput columns={columns} value={value} onChange={setValue} line={{ style: 'curve' }} />;
 }
 ```
 

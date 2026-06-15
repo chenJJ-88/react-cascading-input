@@ -21,11 +21,13 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
     value = [],
     onChange,
     columns,
-    lineStyle = 'curve',
-    lineColor = '#d9d9d9',
-    lineWidth = 1.5,
-    showSource = false,
+    line = {},
 }) => {
+    const lineStyle = line.style ?? 'curve';
+    const lineColor = line.color ?? '#d9d9d9';
+    const lineWidth = line.width ?? 1.5;
+    const showSource = line.showSource ?? false;
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -116,15 +118,12 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
                                     onChange: (val) => handleValueChange(currentPath, val, col.dataIndex),
                                     node,
                                     level,
-                                    path: currentPath,
                                     dataIndex: col.dataIndex,
                                     title: col.title,
-                                    hasAdd: col.hasAdd,
                                     onAdd: () => handleAdd(currentPath, level),
                                     onDelete: () => handleDelete(currentPath),
                                     isLeaf,
                                     width: col.width,
-                                    id: node.id,
                                 })}
                                 {col.hasAdd && (
                                     <div className="tree-cell-action">

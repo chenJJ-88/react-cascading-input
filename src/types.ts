@@ -13,34 +13,56 @@ export interface TreeNode {
 /** 关系线样式 */
 export type LineStyle = 'straight' | 'curve';
 
+/** 溯源动画配置 */
+export interface SourceAnimationOptions {
+    /** 粒子颜色，默认跟随 line.color */
+    color?: string;
+    /** 粒子最小半径，默认 2.5 */
+    minRadius?: number;
+    /** 粒子最大半径，默认 4 */
+    maxRadius?: number;
+    /** 呼吸周期（ms），默认 400 */
+    breatheCycle?: number;
+    /** 呼吸幅度 0~1，默认 1 */
+    breatheAmplitude?: number;
+    /** 动画速度，默认 0.004 */
+    speed?: number;
+}
+
+/** 连线配置 */
+export interface LineConfig {
+    /** 连线风格，默认 'curve' */
+    style?: LineStyle;
+    /** 连线颜色，默认 '#d9d9d9' */
+    color?: string;
+    /** 连线粗细，默认 1.5 */
+    width?: number;
+    /** 溯源动画，false 或不传不开启，true 使用默认配置，对象可自定义 */
+    showSource?: boolean | SourceAnimationOptions;
+}
+
 /** 每个单元格的渲染回调参数 */
 export interface CellRenderProps {
     /** 当前单元格值 */
     value: string;
     /** 值变更回调（已绑定 path + dataIndex） */
     onChange: (val: string) => void;
-    /** 当前树节点 */
+    /** 当前树节点，可访问 node.children 等信息 */
     node: TreeNode;
-    /** 当前层级索引 */
+    /** 当前层级索引（0 开始） */
     level: number;
-    /** 从根到当前节点的 id 路径 */
-    path: string[];
     /** 数据字段名 */
     dataIndex: string;
     /** 列标题 */
     title: string;
-    /** 是否显示"添加"按钮 */
-    hasAdd: boolean;
     /** 添加同级节点回调（已绑定 path + level） */
     onAdd: () => void;
     /** 删除节点回调（仅叶子层级，已绑定 path） */
     onDelete: () => void;
     /** 是否为叶子层级 */
     isLeaf: boolean;
-    /** 列宽度 */
+    /** 列宽度（px） */
     width: number;
-    /** 节点 id（Canvas 连线依赖 `data-cell-id` 属性） */
-    id: string;
 }
 
 /** 操作按钮渲染参数 */
@@ -75,12 +97,6 @@ export interface CascadingInputProps {
     onChange?: (value: TreeNode[]) => void;
     /** 列配置 */
     columns: ColumnConfig[];
-    /** 关系线样式，默认 'curve' */
-    lineStyle?: LineStyle;
-    /** 关系线颜色，默认 '#d9d9d9' */
-    lineColor?: string;
-    /** 关系线粗细，默认 1.5 */
-    lineWidth?: number;
-    /** 是否显示汇聚源线，展示子节点从哪个父节点分裂出去 */
-    showSource?: boolean;
+    /** 连线配置 */
+    line?: LineConfig;
 }

@@ -79,7 +79,7 @@ function App() {
 
 ## 自定义渲染
 
-通过 `render` 可以渲染任意控件，比如 select：
+通过 `render` 可以渲染任意控件，比如 select，亦或者第三方 UI 库中的组件。
 
 ```tsx
 import type { ColumnConfig } from 'react-cascading-input';
@@ -121,17 +121,26 @@ const columns: ColumnConfig[] = [
 
 ## 连线样式
 
+所有连线相关配置通过 `line` prop 统一管理：
+
 ```tsx
 {/* 折线风格 */}
-<CascadingInput columns={columns} value={value} onChange={setValue} lineStyle="straight" />
+<CascadingInput columns={columns} value={value} onChange={setValue} line={{ style: 'straight' }} />
 
 {/* 自定义连线颜色和粗细 */}
 <CascadingInput
     columns={columns}
     value={value}
     onChange={setValue}
-    lineColor="#1890ff"
-    lineWidth={2}
+    line={{ color: '#1890ff', width: 2 }}
+/>
+
+{/* 开启溯源动画 */}
+<CascadingInput
+    columns={columns}
+    value={value}
+    onChange={setValue}
+    line={{ showSource: true }}
 />
 ```
 
@@ -144,10 +153,29 @@ const columns: ColumnConfig[] = [
 | `columns`   | `ColumnConfig[]`              | —           | 列配置（必填）   |
 | `value`     | `TreeNode[]`                  | `[]`        | 树数据（受控）   |
 | `onChange`  | `(value: TreeNode[]) => void` | —           | 数据变更回调     |
-| `lineStyle` | `'straight' \| 'curve'`       | `'curve'`   | 关系线样式       |
-| `lineColor` | `string`                      | `'#d9d9d9'` | 关系线颜色       |
-| `lineWidth` | `number`                      | `1.5`       | 关系线粗细       |
-| `showSource` | `boolean`                     | `false`     | 溯源动画，线条上粒子从子节点流向父节点 |
+| `line`      | `LineConfig`                  | `{}`        | 连线配置         |
+
+### LineConfig
+
+| Property     | Type                                    | Default     | Description                          |
+| ------------ | --------------------------------------- | ----------- | ------------------------------------ |
+| `style`      | `'straight' \| 'curve'`                 | `'curve'`   | 连线风格                             |
+| `color`      | `string`                                | `'#d9d9d9'` | 连线颜色                             |
+| `width`      | `number`                                | `1.5`       | 连线粗细                             |
+| `showSource` | `boolean \| SourceAnimationOptions`      | `false`     | 溯源动画，粒子从子节点流向父节点     |
+
+### SourceAnimationOptions
+
+`line.showSource` 设为对象时可自定义粒子动画：
+
+| Property          | Type     | Default         | Description      |
+| ----------------- | -------- | --------------- | ---------------- |
+| `color`           | `string` | 跟随 `line.color` | 粒子颜色       |
+| `minRadius`       | `number` | `2.5`           | 粒子最小半径     |
+| `maxRadius`       | `number` | `4`             | 粒子最大半径     |
+| `breatheCycle`    | `number` | `400`           | 呼吸周期（ms）   |
+| `breatheAmplitude`| `number` | `1`             | 呼吸幅度 0~1     |
+| `speed`           | `number` | `0.004`         | 动画速度         |
 
 ### ColumnConfig
 
@@ -167,17 +195,14 @@ const columns: ColumnConfig[] = [
 | ----------- | --------------------------- | ---------------------------- |
 | `value`     | `string`                    | 当前单元格值                 |
 | `onChange`  | `(val: string) => void`     | 值变更回调                   |
-| `node`      | `TreeNode`                  | 当前树节点                   |
-| `level`     | `number`                    | 当前层级索引                 |
-| `path`      | `string[]`                  | 从根到当前节点的 id 路径     |
+| `node`      | `TreeNode`                  | 当前树节点，可访问 `node.children` 等 |
+| `level`     | `number`                    | 当前层级索引（0 开始）       |
 | `dataIndex` | `string`                    | 数据字段名                   |
 | `title`     | `string`                    | 列标题                       |
-| `hasAdd`    | `boolean`                   | 是否显示"添加"按钮           |
 | `onAdd`     | `() => void`                | 添加同级节点回调             |
 | `onDelete`  | `() => void`                | 删除节点回调（仅叶子层级）   |
 | `isLeaf`    | `boolean`                   | 是否为叶子层级               |
-| `width`     | `number`                    | 列宽度                       |
-| `id`        | `string`                    | 节点 id                      |
+| `width`     | `number`                    | 列宽度（px）                 |
 
 ### TreeNode
 

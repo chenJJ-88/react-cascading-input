@@ -7,10 +7,7 @@
 | `columns` | `ColumnConfig[]` | — | 列配置，必填 |
 | `value` | `TreeNode[]` | `[]` | 受控数据 |
 | `onChange` | `(value: TreeNode[]) => void` | — | 数据变更回调 |
-| `lineStyle` | `'curve' \| 'straight'` | `'curve'` | 连线风格 |
-| `lineColor` | `string` | `'#d9d9d9'` | 连线颜色 |
-| `lineWidth` | `number` | `1.5` | 连线粗细（px） |
-| `showSource` | `boolean` | `false` | 开启溯源动画，线条上粒子从子节点流向父节点 |
+| `line` | `LineConfig` | `{}` | 连线配置 |
 
 ## ColumnConfig
 
@@ -24,6 +21,30 @@
 | `addRender` | `(props: ActionRenderProps) => ReactNode` | | 自定义"添加"按钮渲染，位置固定在单元格下方。不传则使用默认样式 |
 | `deleteRender` | `(props: ActionRenderProps) => ReactNode` | | 自定义"删除"按钮渲染（仅叶子层级），位置固定在行末尾。不传则使用默认样式 |
 
+## LineConfig
+
+| 字段 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `style` | `'curve' \| 'straight'` | `'curve'` | 连线风格 |
+| `color` | `string` | `'#d9d9d9'` | 连线颜色 |
+| `width` | `number` | `1.5` | 连线粗细（px） |
+| `showSource` | `boolean \| SourceAnimationOptions` | `false` | 溯源动画配置 |
+
+## SourceAnimationOptions
+
+`line.showSource` 设为对象时可自定义粒子动画：
+
+| 字段 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `color` | `string` | 跟随 `line.color` | 粒子颜色 |
+| `minRadius` | `number` | `2.5` | 粒子最小半径 |
+| `maxRadius` | `number` | `4` | 粒子最大半径 |
+| `breatheCycle` | `number` | `400` | 呼吸周期（ms） |
+| `breatheAmplitude` | `number` | `1` | 呼吸幅度 0~1 |
+| `speed` | `number` | `0.004` | 动画速度 |
+
+
+
 ## CellRenderProps
 
 `render` 函数接收的参数：
@@ -32,17 +53,14 @@
 |---|---|---|
 | `value` | `string` | 当前单元格的值 |
 | `onChange` | `(val: string) => void` | 更新当前单元格值的回调（已绑定路径） |
-| `node` | `TreeNode` | 当前树节点的完整数据 |
-| `level` | `number` | 当前层级索引（0 开始） |
-| `path` | `string[]` | 从根到当前节点的 id 路径 |
-| `dataIndex` | `string` | 当前列的 dataIndex |
+| `node` | `TreeNode` | 当前树节点的完整数据，可访问 `node.children` 等 |
+| `level` | `number` | 当前层级索引（0 开始），常用于区分不同层级的样式 |
+| `dataIndex` | `string` | 当前列的 dataIndex，同一 render 函数服务多列时可区分字段 |
 | `title` | `string` | 当前列的标题 |
-| `hasAdd` | `boolean` | 是否显示添加按钮 |
 | `onAdd` | `() => void` | 添加同级节点（已绑定路径和层级） |
 | `onDelete` | `() => void` | 删除当前行（仅叶子层级有效） |
-| `isLeaf` | `boolean` | 是否为最后一列（叶子层级） |
-| `width` | `number` | 当前列宽 |
-| `id` | `string` | 当前节点 id（Canvas 连线依赖 `data-cell-id` 属性） |
+| `isLeaf` | `boolean` | 是否为最后一列（叶子层级），常用于给末列加特殊样式 |
+| `width` | `number` | 当前列宽（px），可用于计算内部元素尺寸 |
 
 ## ActionRenderProps
 

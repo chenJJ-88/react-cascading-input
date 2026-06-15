@@ -77,9 +77,7 @@ export function DemoCustomActions() {
                 columns={columns}
                 value={value}
                 onChange={setValue}
-                lineStyle="curve"
-                lineColor="#1890ff"
-                lineWidth={1}
+                line={{ style: 'curve', color: '#1890ff', width: 1 }}
             />
             <details style={{ marginTop: 16 }}>
                 <summary style={{ cursor: 'pointer', color: '#666', fontSize: 13 }}>查看数据</summary>

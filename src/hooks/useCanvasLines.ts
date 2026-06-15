@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import type { RefObject } from 'react';
-import type { LineStyle, TreeNode } from '../types';
+import type { LineStyle, SourceAnimationOptions, TreeNode } from '../types';
 
 interface LineSegment {
     startX: number;
     startY: number;
     endX: number;
     endY: number;
-    /** 折线模式的中间控制点 */
     midX?: number;
 }
 
@@ -24,7 +23,33 @@ interface UseCanvasLinesOptions {
     lineStyle: LineStyle;
     lineColor: string;
     lineWidth: number;
-    showSource?: boolean;
+    showSource?: boolean | SourceAnimationOptions;
+}
+
+/** 解析 showSource 配置，返回动画参数对象或 false */
+function resolveSourceConfig(
+    showSource: boolean | SourceAnimationOptions | undefined,
+    lineColor: string,
+): false | Required<SourceAnimationOptions> {
+    if (!showSource) { return false; }
+    if (showSource === true) {
+        return {
+            color: lineColor,
+            minRadius: 2.5,
+            maxRadius: 4,
+            breatheCycle: 400,
+            breatheAmplitude: 1,
+            speed: 0.004,
+        };
+    }
+    return {
+        color: showSource.color ?? lineColor,
+        minRadius: showSource.minRadius ?? 2.5,
+        maxRadius: showSource.maxRadius ?? 4,
+        breatheCycle: showSource.breatheCycle ?? 400,
+        breatheAmplitude: showSource.breatheAmplitude ?? 1,
+        speed: showSource.speed ?? 0.004,
+    };
 }
 
 /** 贝塞尔曲线上的点（3阶） */
@@ -38,7 +63,6 @@ function straightPoint(progress: number, line: LineSegment): { x: number; y: num
     const { startX, startY, endX, endY, midX } = line;
     const mx = midX ?? ((startX + endX) / 2);
 
-    // 3 段：start→mid水平 / mid垂直 / mid→end水平
     const seg1Len = Math.abs(mx - startX);
     const seg2Len = Math.abs(endY - startY);
     const seg3Len = Math.abs(endX - mx);
@@ -63,13 +87,9 @@ function straightPoint(progress: number, line: LineSegment): { x: number; y: num
 function curvePoint(progress: number, line: LineSegment): { x: number; y: number } {
     const { startX, startY, endX, endY } = line;
     const o = 20;
-    const cp1x = startX + o;
-    const cp1y = startY;
-    const cp2x = endX - o;
-    const cp2y = endY;
     return {
-        x: bezierPoint(progress, startX, cp1x, cp2x, endX),
-        y: bezierPoint(progress, startY, cp1y, cp2y, endY),
+        x: bezierPoint(progress, startX, startX + o, endX - o, endX),
+        y: bezierPoint(progress, startY, startY, endY, endY),
     };
 }
 
@@ -88,7 +108,7 @@ export function useCanvasLines({
     lineStyle,
     lineColor,
     lineWidth,
-    showSource = false,
+    showSource,
 }: UseCanvasLinesOptions) {
     const animFrameRef = useRef<number>(0);
     const particlesRef = useRef<Particle[]>([]);
@@ -166,18 +186,17 @@ export function useCanvasLines({
         if (canvas.height !== rect.height) { canvas.height = rect.height; }
 
         const lines = collectLines();
+        const sourceConfig = resolveSourceConfig(showSource, lineColor);
 
-        // 初始化粒子（如果线条数量变了，重新创建）
+        // 初始化粒子
         if (particlesRef.current.length !== lines.length) {
-            particlesRef.current = lines.map((line) => ({
-                progress: Math.random(), // 随机初始位置，避免所有粒子同步
-                speed: 0.003 + Math.random() * 0.002, // 稍有速度差异
-                line,
+            particlesRef.current = lines.map(() => ({
+                progress: Math.random(),
+                speed: sourceConfig ? sourceConfig.speed + (Math.random() - 0.5) * 0.002 : 0.004,
+                line: lines[0], // 临时占位，下面更新
             }));
-        } else {
-            // 更新线条坐标（resize 时位置变化）
-            particlesRef.current.forEach((p, i) => { p.line = lines[i]; });
         }
+        particlesRef.current.forEach((p, i) => { p.line = lines[i]; });
 
         const animate = () => {
             const rect2 = container.getBoundingClientRect();
@@ -190,32 +209,40 @@ export function useCanvasLines({
             renderLines(ctx, lines, lineStyle, lineColor, lineWidth);
 
             // 画粒子
-            const now = Date.now();
-            particlesRef.current.forEach((particle) => {
-                particle.progress += particle.speed;
-                if (particle.progress > 1) { particle.progress -= 1; }
+            if (sourceConfig) {
+                const now = Date.now();
+                const { minRadius, maxRadius, breatheCycle, breatheAmplitude, color } = sourceConfig;
+                const midRadius = (minRadius + maxRadius) / 2;
+                const amplitude = ((maxRadius - minRadius) / 2) * breatheAmplitude;
 
-                // 收拢效果：粒子从子节点（end）流向父节点（start）
-                const pos = getParticlePosition(1 - particle.progress, particle.line, lineStyle);
+                particlesRef.current.forEach((particle) => {
+                    particle.progress += particle.speed;
+                    if (particle.progress > 1) { particle.progress -= 1; }
 
-                // 呼吸效果：半径在 2.5~4 之间脉动
-                const breathe = 2.5 + 1.5 * (0.5 + 0.5 * Math.sin(now / 400 + particle.progress * Math.PI * 2));
+                    // 收拢效果：粒子从子节点（end）流向父节点（start）
+                    const pos = getParticlePosition(1 - particle.progress, particle.line, lineStyle);
 
-                ctx.fillStyle = lineColor;
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, breathe, 0, Math.PI * 2);
-                ctx.fill();
-            });
+                    // 呼吸效果
+                    const breathe = midRadius + amplitude * Math.sin(now / breatheCycle * Math.PI * 2 + particle.progress * Math.PI * 2);
+
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, breathe, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
 
             animFrameRef.current = requestAnimationFrame(animate);
         };
 
         animFrameRef.current = requestAnimationFrame(animate);
-    }, [value, lineStyle, lineColor, lineWidth, collectLines, canvasRef, containerRef]);
+    }, [value, lineStyle, lineColor, lineWidth, showSource, collectLines, canvasRef, containerRef]);
+
+    const sourceEnabled = !!showSource;
 
     // 主 effect：根据 showSource 决定静态还是动画
     useEffect(() => {
-        if (showSource) {
+        if (sourceEnabled) {
             startAnimation();
         } else {
             drawStaticLines();
@@ -226,7 +253,7 @@ export function useCanvasLines({
                 cancelAnimationFrame(animFrameRef.current);
             }
         };
-    }, [showSource, drawStaticLines, startAnimation]);
+    }, [sourceEnabled, drawStaticLines, startAnimation]);
 
     // Resize 监听
     useLayoutEffect(() => {
@@ -234,18 +261,17 @@ export function useCanvasLines({
         let ro: ResizeObserver | null = null;
         if (container && typeof ResizeObserver !== 'undefined') {
             ro = new ResizeObserver(() => {
-                if (!showSource) { drawStaticLines(); }
-                // 动画模式下，下一帧自动重绘，无需额外处理
+                if (!sourceEnabled) { drawStaticLines(); }
             });
             ro.observe(container);
         }
         window.addEventListener('resize', () => {
-            if (!showSource) { drawStaticLines(); }
+            if (!sourceEnabled) { drawStaticLines(); }
         });
         return () => {
             ro?.disconnect();
         };
-    }, [showSource, drawStaticLines, containerRef]);
+    }, [sourceEnabled, drawStaticLines, containerRef]);
 }
 
 /** 渲染所有连线 */

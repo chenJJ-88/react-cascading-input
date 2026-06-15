@@ -85,7 +85,7 @@ export function App() {
 
 ## 混合 input + select
 
-同一组件中混合使用 `<input>` 和 `<select>`，展示 `render` prop 的灵活性。4 层嵌套，训练集群和框架版本使用下拉选择。
+同一组件中混合使用 `<input>` 和 `<select>`，展示 `render` prop 的灵活性。4 层嵌套，训练集群和框架版本使用下拉选择。同时演示了 `level`、`isLeaf`、`node` 等 CellRenderProps 参数的实际用法：通过 `level` 给不同层级设置不同边框色，通过 `node.children` 显示子节点数量，通过 `isLeaf` 给末列加浅灰背景。
 
 <DemoSelect />
 
@@ -109,14 +109,22 @@ const inputStyle: React.CSSProperties = {
   border: '1px solid #d9d9d9', borderRadius: 4, fontSize: 14, height: 32,
 };
 
+/** 不同层级的边框色，通过 level 区分视觉深度 */
+const levelColors = ['#d9d9d9', '#91d5ff', '#b7eb8f', '#ffd591'];
+
 const columns: ColumnConfig[] = [
   {
     title: '训练任务',
     dataIndex: 'product',
     width: 120,
     hasAdd: true,
-    render: ({ value, onChange, title }) => (
-      <input style={inputStyle} placeholder={`请输入${title}`} value={value} onChange={(e) => onChange(e.target.value)} />
+    render: ({ value, onChange, title, level }) => (
+      <input
+        style={{ ...inputStyle, borderColor: levelColors[level] || '#d9d9d9' }}
+        placeholder={`请输入${title}`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
     ),
   },
   {
@@ -124,13 +132,24 @@ const columns: ColumnConfig[] = [
     dataIndex: 'region',
     width: 130,
     hasAdd: true,
-    render: ({ value, onChange, title }) => (
-      <select style={selectStyle} value={value || ''} onChange={(e) => onChange(e.target.value)}>
-        <option value="">请选择{title}</option>
-        <option value="beijing">北京</option>
-        <option value="shanghai">上海</option>
-        <option value="guangzhou">广州</option>
-      </select>
+    render: ({ value, onChange, title, level, node }) => (
+      <div style={{ position: 'relative' }}>
+        <select
+          style={{ ...selectStyle, borderColor: levelColors[level] || '#d9d9d9' }}
+          value={value || ''}
+          onChange={(e) => onChange(e.target.value)}
+        >
+          <option value="">请选择{title}</option>
+          <option value="beijing">北京</option>
+          <option value="shanghai">上海</option>
+          <option value="guangzhou">广州</option>
+        </select>
+        {node.children && node.children.length > 0 && (
+          <span style={{ position: 'absolute', right: 24, top: 8, fontSize: 11, color: '#999', pointerEvents: 'none' }}>
+            {node.children.length}项
+          </span>
+        )}
+      </div>
     ),
   },
   {
@@ -138,8 +157,12 @@ const columns: ColumnConfig[] = [
     dataIndex: 'framework',
     width: 130,
     hasAdd: true,
-    render: ({ value, onChange, title }) => (
-      <select style={selectStyle} value={value || ''} onChange={(e) => onChange(e.target.value)}>
+    render: ({ value, onChange, title, level }) => (
+      <select
+        style={{ ...selectStyle, borderColor: levelColors[level] || '#d9d9d9' }}
+        value={value || ''}
+        onChange={(e) => onChange(e.target.value)}
+      >
         <option value="">请选择{title}</option>
         <option value="pytorch">PyTorch</option>
         <option value="tensorflow">TensorFlow</option>
@@ -152,8 +175,16 @@ const columns: ColumnConfig[] = [
     dataIndex: 'stage',
     width: 120,
     hasAdd: false,
-    render: ({ value, onChange, title }) => (
-      <select style={selectStyle} value={value || ''} onChange={(e) => onChange(e.target.value)}>
+    render: ({ value, onChange, title, level, isLeaf }) => (
+      <select
+        style={{
+          ...selectStyle,
+          borderColor: levelColors[level] || '#d9d9d9',
+          background: isLeaf ? '#fafafa' : '#fff',
+        }}
+        value={value || ''}
+        onChange={(e) => onChange(e.target.value)}
+      >
         <option value="">请选择{title}</option>
         <option value="preprocess">预处理</option>
         <option value="training">训练中</option>
@@ -356,6 +387,8 @@ export function App() {
   const [lineWidth, setLineWidth] = useState(1.5);
   const [showSource, setShowSource] = useState(false);
 
+  const line = { style: lineStyle, color: lineColor, width: lineWidth, showSource };
+
   return (
     <>
       <div style={{ marginBottom: 16, display: 'flex', gap: 16, alignItems: 'center' }}>
@@ -385,10 +418,7 @@ export function App() {
         columns={columns}
         value={value}
         onChange={setValue}
-        lineStyle={lineStyle}
-        lineColor={lineColor}
-        lineWidth={lineWidth}
-        showSource={showSource}
+        line={line}
       />
     </>
   );

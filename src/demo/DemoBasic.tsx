@@ -37,7 +37,7 @@ export function DemoBasic() {
 
     return (
         <div style={{ padding: '16px 0' }}>
-            <CascadingInput columns={columns} value={value} onChange={setValue} lineStyle="curve" />
+            <CascadingInput columns={columns} value={value} onChange={setValue} line={{ style: 'curve' }} />
             <details style={{ marginTop: 16 }}>
                 <summary style={{ cursor: 'pointer', color: '#666', fontSize: 13 }}>查看数据</summary>
                 <pre style={{ background: '#f5f5f5', padding: 12, borderRadius: 6, fontSize: 12, overflow: 'auto' }}>

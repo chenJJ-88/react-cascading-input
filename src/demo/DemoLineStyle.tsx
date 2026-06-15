@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CascadingInput } from '../index';
-import type { ColumnConfig } from '../types';
+import type { ColumnConfig, LineConfig } from '../types';
 import '../styles/index.css';
 
 const inputStyle: React.CSSProperties = {
@@ -50,6 +50,13 @@ export function DemoLineStyle() {
     const [lineWidth, setLineWidth] = useState(1.5);
     const [showSource, setShowSource] = useState(false);
 
+    const line: LineConfig = {
+        style: lineStyle,
+        color: lineColor,
+        width: lineWidth,
+        showSource,
+    };
+
     return (
         <div style={{ padding: '16px 0' }}>
             <div style={{ marginBottom: 16, display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', fontSize: 14 }}>
@@ -83,10 +90,7 @@ export function DemoLineStyle() {
                 columns={columns}
                 value={value}
                 onChange={setValue}
-                lineStyle={lineStyle}
-                lineColor={lineColor}
-                lineWidth={lineWidth}
-                showSource={showSource}
+                line={line}
             />
             <details style={{ marginTop: 16 }}>
                 <summary style={{ cursor: 'pointer', color: '#666', fontSize: 13 }}>查看数据</summary>

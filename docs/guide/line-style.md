@@ -1,10 +1,10 @@
 # 连线样式
 
-组件通过 Canvas 在父子节点之间绘制连接线，支持两种风格和自定义外观。
+组件通过 Canvas 在父子节点之间绘制连接线，所有连线相关配置通过 `line` prop 统一管理。
 
-## lineStyle
+## line.style
 
-通过 `lineStyle` prop 切换：
+通过 `line.style` 切换连线风格：
 
 | 值 | 效果 |
 |---|---|
@@ -12,23 +12,23 @@
 | `'straight'` | 90° 折线，更工整 |
 
 ```tsx
-<CascadingInput columns={columns} value={value} onChange={setValue} lineStyle="straight" />
+<CascadingInput columns={columns} value={value} onChange={setValue} line={{ style: 'straight' }} />
 ```
 
-## lineColor
+## line.color
 
-通过 `lineColor` prop 自定义连线颜色，默认 `'#d9d9d9'`：
+自定义连线颜色，默认 `'#d9d9d9'`：
 
 ```tsx
-<CascadingInput columns={columns} value={value} onChange={setValue} lineColor="#1890ff" />
+<CascadingInput columns={columns} value={value} onChange={setValue} line={{ color: '#1890ff' }} />
 ```
 
-## lineWidth
+## line.width
 
-通过 `lineWidth` prop 自定义连线粗细（px），默认 `1.5`：
+自定义连线粗细（px），默认 `1.5`：
 
 ```tsx
-<CascadingInput columns={columns} value={value} onChange={setValue} lineWidth={2} />
+<CascadingInput columns={columns} value={value} onChange={setValue} line={{ width: 2 }} />
 ```
 
 ## 组合使用
@@ -38,21 +38,32 @@
     columns={columns}
     value={value}
     onChange={setValue}
-    lineStyle="straight"
-    lineColor="#52c41a"
-    lineWidth={2}
+    line={{ style: 'straight', color: '#52c41a', width: 2 }}
 />
 ```
 
-## showSource 溯源动画
+## line.showSource 溯源动画
 
-开启 `showSource` 后，连线上的小圆点粒子会从子节点沿线条流向父节点，用 `requestAnimationFrame` 驱动动画循环，直观展示数据溯源关系：
+开启后，连线上的小圆点粒子会从子节点沿线条流向父节点，用 `requestAnimationFrame` 驱动动画循环，直观展示数据溯源关系：
 
 ```tsx
-<CascadingInput columns={columns} value={value} onChange={setValue} showSource />
+{/* 默认配置 */}
+<CascadingInput columns={columns} value={value} onChange={setValue} line={{ showSource: true }} />
+
+{/* 自定义粒子动画 */}
+<CascadingInput
+    columns={columns}
+    value={value}
+    onChange={setValue}
+    line={{
+        style: 'curve',
+        color: '#d9d9d9',
+        showSource: { color: '#1890ff', speed: 0.006, breatheCycle: 300 },
+    }}
+/>
 ```
 
-> 粒子颜色跟随 `lineColor`，运动路径跟随 `lineStyle`（贝塞尔曲线或折线）。
+> 粒子颜色默认跟随 `line.color`，运动路径跟随 `line.style`。详细配置项见 [API - SourceAnimationOptions](/api/)。
 
 ## 工作原理
 

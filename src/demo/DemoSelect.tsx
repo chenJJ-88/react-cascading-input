@@ -24,14 +24,22 @@ const inputStyle: React.CSSProperties = {
     height: 32,
 };
 
+/** 不同层级的边框色，通过 level 区分视觉深度 */
+const levelColors = ['#d9d9d9', '#91d5ff', '#b7eb8f', '#ffd591'];
+
 const columns: ColumnConfig[] = [
     {
         title: '训练任务',
         dataIndex: 'product',
         width: 120,
         hasAdd: true,
-        render: ({ value, onChange, title }) => (
-            <input style={inputStyle} placeholder={`请输入${title}`} value={value} onChange={(e) => onChange(e.target.value)} />
+        render: ({ value, onChange, title, level }) => (
+            <input
+                style={{ ...inputStyle, borderColor: levelColors[level] || '#d9d9d9' }}
+                placeholder={`请输入${title}`}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            />
         ),
     },
     {
@@ -39,13 +47,24 @@ const columns: ColumnConfig[] = [
         dataIndex: 'region',
         width: 130,
         hasAdd: true,
-        render: ({ value, onChange, title }) => (
-            <select style={selectStyle} value={value || ''} onChange={(e) => onChange(e.target.value)}>
-                <option value="">请选择{title}</option>
-                <option value="beijing">北京</option>
-                <option value="shanghai">上海</option>
-                <option value="guangzhou">广州</option>
-            </select>
+        render: ({ value, onChange, title, level, node }) => (
+            <div style={{ position: 'relative' }}>
+                <select
+                    style={{ ...selectStyle, borderColor: levelColors[level] || '#d9d9d9' }}
+                    value={value || ''}
+                    onChange={(e) => onChange(e.target.value)}
+                >
+                    <option value="">请选择{title}</option>
+                    <option value="beijing">北京</option>
+                    <option value="shanghai">上海</option>
+                    <option value="guangzhou">广州</option>
+                </select>
+                {node.children && node.children.length > 0 && (
+                    <span style={{ position: 'absolute', right: 24, top: 8, fontSize: 11, color: '#999', pointerEvents: 'none' }}>
+                        {node.children.length}项
+                    </span>
+                )}
+            </div>
         ),
     },
     {
@@ -53,8 +72,12 @@ const columns: ColumnConfig[] = [
         dataIndex: 'framework',
         width: 130,
         hasAdd: true,
-        render: ({ value, onChange, title }) => (
-            <select style={selectStyle} value={value || ''} onChange={(e) => onChange(e.target.value)}>
+        render: ({ value, onChange, title, level }) => (
+            <select
+                style={{ ...selectStyle, borderColor: levelColors[level] || '#d9d9d9' }}
+                value={value || ''}
+                onChange={(e) => onChange(e.target.value)}
+            >
                 <option value="">请选择{title}</option>
                 <option value="pytorch">PyTorch</option>
                 <option value="tensorflow">TensorFlow</option>
@@ -67,8 +90,16 @@ const columns: ColumnConfig[] = [
         dataIndex: 'stage',
         width: 120,
         hasAdd: false,
-        render: ({ value, onChange, title }) => (
-            <select style={selectStyle} value={value || ''} onChange={(e) => onChange(e.target.value)}>
+        render: ({ value, onChange, title, level, isLeaf }) => (
+            <select
+                style={{
+                    ...selectStyle,
+                    borderColor: levelColors[level] || '#d9d9d9',
+                    background: isLeaf ? '#fafafa' : '#fff',
+                }}
+                value={value || ''}
+                onChange={(e) => onChange(e.target.value)}
+            >
                 <option value="">请选择{title}</option>
                 <option value="preprocess">预处理</option>
                 <option value="training">训练中</option>
@@ -83,7 +114,7 @@ export function DemoSelect() {
 
     return (
         <div style={{ padding: '16px 0' }}>
-            <CascadingInput columns={columns} value={value} onChange={setValue} lineStyle="curve" />
+            <CascadingInput columns={columns} value={value} onChange={setValue} line={{ style: 'curve' }} />
             <details style={{ marginTop: 16 }}>
                 <summary style={{ cursor: 'pointer', color: '#666', fontSize: 13 }}>查看数据</summary>
                 <pre style={{ background: '#f5f5f5', padding: 12, borderRadius: 6, fontSize: 12, overflow: 'auto' }}>
