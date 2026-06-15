@@ -3,6 +3,8 @@ import { defineConfig } from 'rspress/config';
 
 export default defineConfig({
     root: path.join(__dirname, 'docs'),
+    // GitHub Pages 部署时以仓库名为 base 路径
+    base: '/react-cascading-input/',
     title: 'react-cascading-input',
     description: '支持 Canvas 连线的级联树形输入 React 组件',
     themeConfig: {
@@ -28,8 +30,6 @@ export default defineConfig({
                 },
             ],
         },
-        socialLinks: [
-            { icon: 'github', mode: 'link', content: 'https://github.com/chenJJ-88/react-cascading-input' },
-        ],
+        socialLinks: [{ icon: 'github', mode: 'link', content: 'https://github.com/chenJJ-88/react-cascading-input' }],
     },
 });

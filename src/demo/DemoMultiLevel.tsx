@@ -19,7 +19,12 @@ const mkInput = (title: string, dataIndex: string, width: number, hasAdd: boolea
     width,
     hasAdd,
     render: ({ value, onChange }) => (
-        <input style={inputStyle} placeholder={`请输入${title}`} value={value} onChange={(e) => onChange(e.target.value)} />
+        <input
+            style={inputStyle}
+            placeholder={`请输入${title}`}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+        />
     ),
 });
 

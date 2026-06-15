@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import type { RefObject } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import type { LineStyle, SourceAnimationOptions, TreeNode } from '../types';
 
 interface LineSegment {
@@ -31,7 +31,9 @@ function resolveSourceConfig(
     showSource: boolean | SourceAnimationOptions | undefined,
     lineColor: string,
 ): false | Required<SourceAnimationOptions> {
-    if (!showSource) { return false; }
+    if (!showSource) {
+        return false;
+    }
     if (showSource === true) {
         return {
             color: lineColor,
@@ -61,13 +63,15 @@ function bezierPoint(t: number, p0: number, p1: number, p2: number, p3: number):
 /** 折线上的点（3段折线：水平→垂直→水平） */
 function straightPoint(progress: number, line: LineSegment): { x: number; y: number } {
     const { startX, startY, endX, endY, midX } = line;
-    const mx = midX ?? ((startX + endX) / 2);
+    const mx = midX ?? (startX + endX) / 2;
 
     const seg1Len = Math.abs(mx - startX);
     const seg2Len = Math.abs(endY - startY);
     const seg3Len = Math.abs(endX - mx);
     const totalLen = seg1Len + seg2Len + seg3Len;
-    if (totalLen === 0) { return { x: startX, y: startY }; }
+    if (totalLen === 0) {
+        return { x: startX, y: startY };
+    }
 
     const d = progress * totalLen;
 
@@ -116,7 +120,9 @@ export function useCanvasLines({
     /** 收集所有父子连线的坐标 */
     const collectLines = useCallback((): LineSegment[] => {
         const container = containerRef.current;
-        if (!container || !value.length) { return []; }
+        if (!container || !value.length) {
+            return [];
+        }
 
         const rect = container.getBoundingClientRect();
         const lines: LineSegment[] = [];
@@ -125,14 +131,18 @@ export function useCanvasLines({
             nodes.forEach((node) => {
                 if (node.children && node.children.length > 0) {
                     const parentEl = container.querySelector(`[data-cell-id="${node.id}"]`);
-                    if (!parentEl) { return; }
+                    if (!parentEl) {
+                        return;
+                    }
                     const pRect = parentEl.getBoundingClientRect();
                     const startX = pRect.right - rect.left;
                     const startY = pRect.top - rect.top + 16;
 
                     node.children.forEach((child) => {
                         const childEl = container.querySelector(`[data-cell-id="${child.id}"]`);
-                        if (!childEl) { return; }
+                        if (!childEl) {
+                            return;
+                        }
                         const cRect = childEl.getBoundingClientRect();
                         const endX = cRect.left - rect.left;
                         const endY = cRect.top - rect.top + 16;
@@ -158,14 +168,22 @@ export function useCanvasLines({
     const drawStaticLines = useCallback(() => {
         const canvas = canvasRef.current;
         const container = containerRef.current;
-        if (!canvas || !container || !value.length) { return; }
+        if (!canvas || !container || !value.length) {
+            return;
+        }
 
         const ctx = canvas.getContext('2d');
-        if (!ctx) { return; }
+        if (!ctx) {
+            return;
+        }
 
         const rect = container.getBoundingClientRect();
-        if (canvas.width !== rect.width) { canvas.width = rect.width; }
-        if (canvas.height !== rect.height) { canvas.height = rect.height; }
+        if (canvas.width !== rect.width) {
+            canvas.width = rect.width;
+        }
+        if (canvas.height !== rect.height) {
+            canvas.height = rect.height;
+        }
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const lines = collectLines();
@@ -176,14 +194,22 @@ export function useCanvasLines({
     const startAnimation = useCallback(() => {
         const canvas = canvasRef.current;
         const container = containerRef.current;
-        if (!canvas || !container || !value.length) { return; }
+        if (!canvas || !container || !value.length) {
+            return;
+        }
 
         const ctx = canvas.getContext('2d');
-        if (!ctx) { return; }
+        if (!ctx) {
+            return;
+        }
 
         const rect = container.getBoundingClientRect();
-        if (canvas.width !== rect.width) { canvas.width = rect.width; }
-        if (canvas.height !== rect.height) { canvas.height = rect.height; }
+        if (canvas.width !== rect.width) {
+            canvas.width = rect.width;
+        }
+        if (canvas.height !== rect.height) {
+            canvas.height = rect.height;
+        }
 
         const lines = collectLines();
         const sourceConfig = resolveSourceConfig(showSource, lineColor);
@@ -196,12 +222,18 @@ export function useCanvasLines({
                 line: lines[0], // 临时占位，下面更新
             }));
         }
-        particlesRef.current.forEach((p, i) => { p.line = lines[i]; });
+        particlesRef.current.forEach((p, i) => {
+            p.line = lines[i];
+        });
 
         const animate = () => {
             const rect2 = container.getBoundingClientRect();
-            if (canvas.width !== rect2.width) { canvas.width = rect2.width; }
-            if (canvas.height !== rect2.height) { canvas.height = rect2.height; }
+            if (canvas.width !== rect2.width) {
+                canvas.width = rect2.width;
+            }
+            if (canvas.height !== rect2.height) {
+                canvas.height = rect2.height;
+            }
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -217,13 +249,17 @@ export function useCanvasLines({
 
                 particlesRef.current.forEach((particle) => {
                     particle.progress += particle.speed;
-                    if (particle.progress > 1) { particle.progress -= 1; }
+                    if (particle.progress > 1) {
+                        particle.progress -= 1;
+                    }
 
                     // 收拢效果：粒子从子节点（end）流向父节点（start）
                     const pos = getParticlePosition(1 - particle.progress, particle.line, lineStyle);
 
                     // 呼吸效果
-                    const breathe = midRadius + amplitude * Math.sin(now / breatheCycle * Math.PI * 2 + particle.progress * Math.PI * 2);
+                    const breathe =
+                        midRadius +
+                        amplitude * Math.sin((now / breatheCycle) * Math.PI * 2 + particle.progress * Math.PI * 2);
 
                     ctx.fillStyle = color;
                     ctx.beginPath();
@@ -261,12 +297,16 @@ export function useCanvasLines({
         let ro: ResizeObserver | null = null;
         if (container && typeof ResizeObserver !== 'undefined') {
             ro = new ResizeObserver(() => {
-                if (!sourceEnabled) { drawStaticLines(); }
+                if (!sourceEnabled) {
+                    drawStaticLines();
+                }
             });
             ro.observe(container);
         }
         window.addEventListener('resize', () => {
-            if (!sourceEnabled) { drawStaticLines(); }
+            if (!sourceEnabled) {
+                drawStaticLines();
+            }
         });
         return () => {
             ro?.disconnect();
@@ -290,17 +330,13 @@ function renderLines(
         ctx.moveTo(line.startX, line.startY);
 
         if (lineStyle === 'straight') {
-            const mx = line.midX ?? ((line.startX + line.endX) / 2);
+            const mx = line.midX ?? (line.startX + line.endX) / 2;
             ctx.lineTo(mx, line.startY);
             ctx.lineTo(mx, line.endY);
             ctx.lineTo(line.endX, line.endY);
         } else {
             const o = 20;
-            ctx.bezierCurveTo(
-                line.startX + o, line.startY,
-                line.endX - o, line.endY,
-                line.endX, line.endY,
-            );
+            ctx.bezierCurveTo(line.startX + o, line.startY, line.endX - o, line.endY, line.endX, line.endY);
         }
         ctx.stroke();
     });

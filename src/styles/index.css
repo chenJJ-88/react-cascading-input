@@ -83,8 +83,6 @@
 .tree-level-children {
     z-index: 1;
 }
-
-
 .tree-level-children .tree-row > .tree-cell {
     margin-left: 20px;
 }

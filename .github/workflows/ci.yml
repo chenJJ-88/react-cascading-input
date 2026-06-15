@@ -2,7 +2,7 @@ name: CI
 
 on:
     push:
-        branches: [main, master]
+        branches: [main]
     pull_request:
 
 # 同一分支只保留最新一次运行，节省 CI 资源
@@ -12,22 +12,18 @@ concurrency:
 
 jobs:
     verify:
-        name: Lint & Test (Node ${{ matrix.node }})
+        name: Lint, Test & Build
         runs-on: ubuntu-latest
-        strategy:
-            fail-fast: false
-            matrix:
-                node: [18, 20, 22]
         steps:
             - uses: actions/checkout@v4
 
             - name: Setup pnpm
               uses: pnpm/action-setup@v4
 
-            - name: Setup Node.js ${{ matrix.node }}
+            - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: ${{ matrix.node }}
+                  node-version: 20
                   cache: pnpm
 
             - name: Install dependencies
@@ -42,5 +38,8 @@ jobs:
             - name: Test
               run: pnpm test
 
-            - name: Build
+            - name: Build library
               run: pnpm build
+
+            - name: Build docs
+              run: pnpm docs:build

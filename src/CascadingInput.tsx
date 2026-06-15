@@ -17,12 +17,7 @@ const createChain = (columns: ColumnConfig[], level: number): TreeNode => {
     return node;
 };
 
-export const CascadingInput: React.FC<CascadingInputProps> = ({
-    value = [],
-    onChange,
-    columns,
-    line = {},
-}) => {
+export const CascadingInput: React.FC<CascadingInputProps> = ({ value = [], onChange, columns, line = {} }) => {
     const lineStyle = line.style ?? 'curve';
     const lineColor = line.color ?? '#d9d9d9';
     const lineWidth = line.width ?? 1.5;
@@ -51,7 +46,9 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
         const currentId = path[0];
         return nodes.map((node) => {
             if (node.id === currentId) {
-                if (path.length === 1) { return { ...node, [dataIndex]: val }; }
+                if (path.length === 1) {
+                    return { ...node, [dataIndex]: val };
+                }
                 return { ...node, children: updateTreeValue(node.children || [], path.slice(1), val, dataIndex) };
             }
             return node;
@@ -79,7 +76,9 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
 
     const deleteNodeCascade = (nodes: TreeNode[], path: string[]): TreeNode[] => {
         const targetId = path[0];
-        if (path.length === 1) { return nodes.filter((n) => n.id !== targetId); }
+        if (path.length === 1) {
+            return nodes.filter((n) => n.id !== targetId);
+        }
         return nodes
             .map((node) => {
                 if (node.id === targetId) {
@@ -93,8 +92,7 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
     const handleValueChange = (path: string[], val: string, dataIndex: string) =>
         onChange?.(updateTreeValue(value, path, val, dataIndex));
 
-    const handleAdd = (path: string[], level: number) =>
-        onChange?.(addSiblingNode(value, path, level));
+    const handleAdd = (path: string[], level: number) => onChange?.(addSiblingNode(value, path, level));
 
     const handleDelete = (path: string[]) => {
         const nextValue = deleteNodeCascade(value, path);
@@ -102,7 +100,9 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
     };
 
     const renderLevel = (nodes: TreeNode[], level: number, parentPath: string[] = []): React.ReactNode => {
-        if (!columns[level]) { return null; }
+        if (!columns[level]) {
+            return null;
+        }
         const col = columns[level];
         const isLeaf = level === columns.length - 1;
 
@@ -127,38 +127,39 @@ export const CascadingInput: React.FC<CascadingInputProps> = ({
                                 })}
                                 {col.hasAdd && (
                                     <div className="tree-cell-action">
-                                        {col.addRender
-                                            ? col.addRender({ onClick: () => handleAdd(currentPath, level) })
-                                            : (
-                                                <button
-                                                    type="button"
-                                                    className="tree-cell-action-btn"
-                                                    onClick={() => handleAdd(currentPath, level)}
-                                                >
-                                                    添加
-                                                </button>
-                                            )}
+                                        {col.addRender ? (
+                                            col.addRender({ onClick: () => handleAdd(currentPath, level) })
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                className="tree-cell-action-btn"
+                                                onClick={() => handleAdd(currentPath, level)}
+                                            >
+                                                添加
+                                            </button>
+                                        )}
                                     </div>
                                 )}
                             </div>
 
-                            {!isLeaf && node.children && node.children.length > 0 &&
+                            {!isLeaf &&
+                                node.children &&
+                                node.children.length > 0 &&
                                 renderLevel(node.children, level + 1, currentPath)}
 
-                            {isLeaf && (
-                                col.deleteRender
-                                    ? col.deleteRender({ onClick: () => handleDelete(currentPath) })
-                                    : (
-                                        <button
-                                            type="button"
-                                            className="tree-delete-btn"
-                                            onClick={() => handleDelete(currentPath)}
-                                            title="删除整行"
-                                        >
-                                            删除
-                                        </button>
-                                    )
-                            )}
+                            {isLeaf &&
+                                (col.deleteRender ? (
+                                    col.deleteRender({ onClick: () => handleDelete(currentPath) })
+                                ) : (
+                                    <button
+                                        type="button"
+                                        className="tree-delete-btn"
+                                        onClick={() => handleDelete(currentPath)}
+                                        title="删除整行"
+                                    >
+                                        删除
+                                    </button>
+                                ))}
                         </div>
                     );
                 })}

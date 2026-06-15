@@ -20,7 +20,12 @@ const columns: ColumnConfig[] = [
         width: 120,
         hasAdd: true,
         render: ({ value, onChange }) => (
-            <input style={inputStyle} placeholder="请输入训练任务" value={value} onChange={(e) => onChange(e.target.value)} />
+            <input
+                style={inputStyle}
+                placeholder="请输入训练任务"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            />
         ),
     },
     {
@@ -29,7 +34,12 @@ const columns: ColumnConfig[] = [
         width: 120,
         hasAdd: true,
         render: ({ value, onChange }) => (
-            <input style={inputStyle} placeholder="请输入训练集群" value={value} onChange={(e) => onChange(e.target.value)} />
+            <input
+                style={inputStyle}
+                placeholder="请输入训练集群"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            />
         ),
     },
     {
@@ -38,7 +48,12 @@ const columns: ColumnConfig[] = [
         width: 180,
         hasAdd: false,
         render: ({ value, onChange }) => (
-            <input style={inputStyle} placeholder="请输入框架版本" value={value} onChange={(e) => onChange(e.target.value)} />
+            <input
+                style={inputStyle}
+                placeholder="请输入框架版本"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            />
         ),
     },
 ];
@@ -59,7 +74,16 @@ export function DemoLineStyle() {
 
     return (
         <div style={{ padding: '16px 0' }}>
-            <div style={{ marginBottom: 16, display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', fontSize: 14 }}>
+            <div
+                style={{
+                    marginBottom: 16,
+                    display: 'flex',
+                    gap: 16,
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    fontSize: 14,
+                }}
+            >
                 <label>
                     连线样式：
                     <select
@@ -73,25 +97,38 @@ export function DemoLineStyle() {
                 </label>
                 <label>
                     连线颜色：
-                    <input type="color" value={lineColor} onChange={(e) => setLineColor(e.target.value)} style={{ marginLeft: 4, verticalAlign: 'middle' }} />
+                    <input
+                        type="color"
+                        value={lineColor}
+                        onChange={(e) => setLineColor(e.target.value)}
+                        style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                    />
                 </label>
                 <label>
                     连线粗细：
-                    <input type="range" min={0.5} max={4} step={0.5} value={lineWidth} onChange={(e) => setLineWidth(Number(e.target.value))} style={{ marginLeft: 4, verticalAlign: 'middle' }} />
+                    <input
+                        type="range"
+                        min={0.5}
+                        max={4}
+                        step={0.5}
+                        value={lineWidth}
+                        onChange={(e) => setLineWidth(Number(e.target.value))}
+                        style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                    />
                     <span style={{ marginLeft: 4, color: '#666' }}>{lineWidth}px</span>
                 </label>
                 <label style={{ cursor: 'pointer' }}>
-                    <input type="checkbox" checked={showSource} onChange={(e) => setShowSource(e.target.checked)} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                    <input
+                        type="checkbox"
+                        checked={showSource}
+                        onChange={(e) => setShowSource(e.target.checked)}
+                        style={{ marginRight: 4, verticalAlign: 'middle' }}
+                    />
                     溯源动画
                 </label>
             </div>
 
-            <CascadingInput
-                columns={columns}
-                value={value}
-                onChange={setValue}
-                line={line}
-            />
+            <CascadingInput columns={columns} value={value} onChange={setValue} line={line} />
             <details style={{ marginTop: 16 }}>
                 <summary style={{ cursor: 'pointer', color: '#666', fontSize: 13 }}>查看数据</summary>
                 <pre style={{ background: '#f5f5f5', padding: 12, borderRadius: 6, fontSize: 12, overflow: 'auto' }}>

@@ -60,7 +60,16 @@ const columns: ColumnConfig[] = [
                     <option value="guangzhou">广州</option>
                 </select>
                 {node.children && node.children.length > 0 && (
-                    <span style={{ position: 'absolute', right: 24, top: 8, fontSize: 11, color: '#999', pointerEvents: 'none' }}>
+                    <span
+                        style={{
+                            position: 'absolute',
+                            right: 24,
+                            top: 8,
+                            fontSize: 11,
+                            color: '#999',
+                            pointerEvents: 'none',
+                        }}
+                    >
                         {node.children.length}项
                     </span>
                 )}

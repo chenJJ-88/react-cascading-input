@@ -39,10 +39,23 @@ const columns: ColumnConfig[] = [
         dataIndex: 'product',
         width: 120,
         hasAdd: true,
-        addRender: ({ onClick }) => <button type="button" style={addBtnStyle} onClick={onClick}>+ 添加</button>,
-        deleteRender: ({ onClick }) => <button type="button" style={deleteBtnStyle} onClick={onClick}>删除</button>,
+        addRender: ({ onClick }) => (
+            <button type="button" style={addBtnStyle} onClick={onClick}>
+                + 添加
+            </button>
+        ),
+        deleteRender: ({ onClick }) => (
+            <button type="button" style={deleteBtnStyle} onClick={onClick}>
+                删除
+            </button>
+        ),
         render: ({ value, onChange, title }) => (
-            <input style={inputStyle} placeholder={`请输入${title}`} value={value} onChange={(e) => onChange(e.target.value)} />
+            <input
+                style={inputStyle}
+                placeholder={`请输入${title}`}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            />
         ),
     },
     {
@@ -50,10 +63,23 @@ const columns: ColumnConfig[] = [
         dataIndex: 'region',
         width: 120,
         hasAdd: true,
-        addRender: ({ onClick }) => <button type="button" style={addBtnStyle} onClick={onClick}>+ 添加</button>,
-        deleteRender: ({ onClick }) => <button type="button" style={deleteBtnStyle} onClick={onClick}>删除</button>,
+        addRender: ({ onClick }) => (
+            <button type="button" style={addBtnStyle} onClick={onClick}>
+                + 添加
+            </button>
+        ),
+        deleteRender: ({ onClick }) => (
+            <button type="button" style={deleteBtnStyle} onClick={onClick}>
+                删除
+            </button>
+        ),
         render: ({ value, onChange, title }) => (
-            <input style={inputStyle} placeholder={`请输入${title}`} value={value} onChange={(e) => onChange(e.target.value)} />
+            <input
+                style={inputStyle}
+                placeholder={`请输入${title}`}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            />
         ),
     },
     {
@@ -61,9 +87,18 @@ const columns: ColumnConfig[] = [
         dataIndex: 'spec',
         width: 180,
         hasAdd: false,
-        deleteRender: ({ onClick }) => <button type="button" style={deleteBtnStyle} onClick={onClick}>删除</button>,
+        deleteRender: ({ onClick }) => (
+            <button type="button" style={deleteBtnStyle} onClick={onClick}>
+                删除
+            </button>
+        ),
         render: ({ value, onChange, title }) => (
-            <input style={inputStyle} placeholder={`请输入${title}`} value={value} onChange={(e) => onChange(e.target.value)} />
+            <input
+                style={inputStyle}
+                placeholder={`请输入${title}`}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            />
         ),
     },
 ];
