@@ -1,0 +1,259 @@
+import { DeleteOutlined } from '@ant-design/icons';
+import { Input, message } from 'antd';
+import type React from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import type { CascadingInputProps, ColumnConfig, TreeNode } from './types';
+
+const genId = () => Math.random().toString(36).substring(2, 9);
+
+const createChain = (columns: ColumnConfig[], level: number): TreeNode => {
+    const col = columns[level];
+    const node: TreeNode = { id: genId() };
+    node[col.dataIndex] = undefined;
+    if (level < columns.length - 1) {
+        node.children = [createChain(columns, level + 1)];
+    } else {
+        node.children = [];
+    }
+    return node;
+};
+
+export const CascadingInput: React.FC<CascadingInputProps> = ({
+    value = [],
+    onChange,
+    columns,
+    lineStyle = 'curve',
+}) => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if ((!value || value.length === 0) && columns.length > 0) {
+            onChange?.([createChain(columns, 0)]);
+        }
+    }, [value, columns, onChange]);
+
+    const drawLines = useCallback(() => {
+        const canvas = canvasRef.current;
+        const container = containerRef.current;
+        if (!canvas || !container || !value.length) {
+            return;
+        }
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            return;
+        }
+
+        const rect = container.getBoundingClientRect();
+        if (canvas.width !== rect.width) {
+            canvas.width = rect.width;
+        }
+        if (canvas.height !== rect.height) {
+            canvas.height = rect.height;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = '#d9d9d9';
+        ctx.lineWidth = 1.5;
+
+        const drawNodeLines = (nodes: TreeNode[]) => {
+            nodes.forEach((node) => {
+                if (node.children && node.children.length > 0) {
+                    const parentEl = container.querySelector(`[data-cell-id="${node.id}"]`);
+                    if (!parentEl) {
+                        return;
+                    }
+                    const pRect = parentEl.getBoundingClientRect();
+                    const startX = pRect.right - rect.left;
+                    const startY = pRect.top - rect.top + 16;
+
+                    node.children.forEach((child) => {
+                        const childEl = container.querySelector(`[data-cell-id="${child.id}"]`);
+                        if (!childEl) {
+                            return;
+                        }
+                        const cRect = childEl.getBoundingClientRect();
+                        const endX = cRect.left - rect.left;
+                        const endY = cRect.top - rect.top + 16;
+
+                        ctx.beginPath();
+                        ctx.moveTo(startX, startY);
+
+                        if (lineStyle === 'straight') {
+                            ctx.lineTo(endX - 20, startY);
+                            ctx.lineTo(endX - 20, endY);
+                            ctx.lineTo(endX, endY);
+                        } else {
+                            const o = 20;
+                            ctx.bezierCurveTo(startX + o, startY, endX - o, endY, endX, endY);
+                        }
+                        ctx.stroke();
+                    });
+                    drawNodeLines(node.children);
+                }
+            });
+        };
+
+        drawNodeLines(value);
+    }, [value, lineStyle]);
+
+    useLayoutEffect(() => {
+        drawLines();
+
+        const container = containerRef.current;
+        let ro: ResizeObserver | null = null;
+        if (container && typeof ResizeObserver !== 'undefined') {
+            ro = new ResizeObserver(() => drawLines());
+            ro.observe(container);
+        }
+        window.addEventListener('resize', drawLines);
+        return () => {
+            ro?.disconnect();
+            window.removeEventListener('resize', drawLines);
+        };
+    }, [drawLines]);
+
+    const updateTreeValue = (nodes: TreeNode[], path: string[], val: string, dataIndex: string): TreeNode[] => {
+        const currentId = path[0];
+        return nodes.map((node) => {
+            if (node.id === currentId) {
+                if (path.length === 1) {
+                    return { ...node, [dataIndex]: val };
+                }
+                return { ...node, children: updateTreeValue(node.children || [], path.slice(1), val, dataIndex) };
+            }
+            return node;
+        });
+    };
+
+    const addSiblingNode = (nodes: TreeNode[], path: string[], level: number): TreeNode[] => {
+        const targetId = path[0];
+        if (path.length === 1) {
+            const index = nodes.findIndex((n) => n.id === targetId);
+            if (index !== -1) {
+                const nextNodes = [...nodes];
+                nextNodes.splice(index + 1, 0, createChain(columns, level));
+                return nextNodes;
+            }
+            return nodes;
+        }
+        return nodes.map((node) => {
+            if (node.id === targetId) {
+                return { ...node, children: addSiblingNode(node.children || [], path.slice(1), level) };
+            }
+            return node;
+        });
+    };
+
+    const deleteNodeCascade = (nodes: TreeNode[], path: string[]): TreeNode[] => {
+        const targetId = path[0];
+        if (path.length === 1) {
+            return nodes.filter((n) => n.id !== targetId);
+        }
+        return nodes
+            .map((node) => {
+                if (node.id === targetId) {
+                    return { ...node, children: deleteNodeCascade(node.children || [], path.slice(1)) };
+                }
+                return node;
+            })
+            .filter((node) => !(node.id === targetId && node.children?.length === 0));
+    };
+
+    const handleValueChange = (path: string[], val: string, dataIndex: string) =>
+        onChange?.(updateTreeValue(value, path, val, dataIndex));
+
+    const handleAdd = (path: string[], level: number) => onChange?.(addSiblingNode(value, path, level));
+
+    const handleDelete = (path: string[]) => {
+        const nextValue = deleteNodeCascade(value, path);
+        if (nextValue.length === 0) {
+            message.info('至少保留一条配置');
+            onChange?.([createChain(columns, 0)]);
+        } else {
+            onChange?.(nextValue);
+        }
+    };
+
+    const renderLevel = (nodes: TreeNode[], level: number, parentPath: string[] = []): React.ReactNode => {
+        if (!columns[level]) {
+            return null;
+        }
+        const col = columns[level];
+        const isLeaf = level === columns.length - 1;
+        const containerClass = level === 0 ? 'tree-level-root' : 'tree-level-children';
+
+        return (
+            <div className={containerClass}>
+                {nodes.map((node) => {
+                    const currentPath = [...parentPath, node.id];
+                    return (
+                        <div className="tree-row" key={node.id}>
+                            <div data-cell-id={node.id} className="tree-cell" style={{ width: col.width }}>
+                                <Input
+                                    style={{ width: '100%' }}
+                                    placeholder={`请输入${col.title}`}
+                                    value={node[col.dataIndex]}
+                                    onChange={(e) => handleValueChange(currentPath, e.target.value, col.dataIndex)}
+                                />
+                                {col.hasAdd && (
+                                    <div className="tree-cell-action">
+                                        <button
+                                            type="button"
+                                            className="tree-cell-action-btn"
+                                            onClick={() => handleAdd(currentPath, level)}
+                                        >
+                                            添加
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {!isLeaf &&
+                                node.children &&
+                                node.children.length > 0 &&
+                                renderLevel(node.children, level + 1, currentPath)}
+
+                            {isLeaf && (
+                                <button
+                                    type="button"
+                                    className="tree-delete-btn"
+                                    onClick={() => handleDelete(currentPath)}
+                                    title="删除整行"
+                                >
+                                    <DeleteOutlined />
+                                </button>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
+
+    return (
+        <div className="cascading-table-wrapper">
+            <div className="tree-header">
+                {columns.map((col: ColumnConfig, i: number) => (
+                    <div
+                        key={col.dataIndex}
+                        className="tree-header-cell"
+                        style={{
+                            width: col.width,
+                            marginRight: i < columns.length - 1 ? 30 : 0,
+                            marginLeft: i > 0 ? 20 : 0,
+                        }}
+                    >
+                        {col.title}
+                    </div>
+                ))}
+            </div>
+
+            <div className="tree-body" ref={containerRef}>
+                <canvas ref={canvasRef} className="tree-canvas-layer" />
+                {renderLevel(value, 0)}
+            </div>
+        </div>
+    );
+};

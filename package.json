@@ -1,0 +1,91 @@
+{
+    "name": "react-cascading-input",
+    "version": "0.1.0",
+    "description": "A headless React component for cascading tree-style input with canvas connection lines",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        },
+        "./styles": "./dist/style.css"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc --noEmit --project tsconfig.src.json && vite build",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "lint": "biome check .",
+        "lint:fix": "biome check --write .",
+        "format": "biome format --write .",
+        "format:check": "biome format .",
+        "typecheck": "tsc --noEmit --project tsconfig.src.json && tsc --noEmit --project tsconfig.demo.json && tsc --noEmit --project tsconfig.node.json",
+        "prepare": "husky"
+    },
+    "peerDependencies": {
+        "react": "^18 || ^19",
+        "react-dom": "^18 || ^19"
+    },
+    "devDependencies": {
+        "@ant-design/icons": "^5.6.0",
+        "@biomejs/biome": "^2.5.0",
+        "@testing-library/dom": "^10.4.1",
+        "@testing-library/jest-dom": "^6.6.3",
+        "@testing-library/react": "^16.3.0",
+        "@types/node": "^25.9.3",
+        "@types/react": "^18.3.20",
+        "@types/react-dom": "^18.3.7",
+        "@vitejs/plugin-react": "^4.5.0",
+        "antd": "^5.24.0",
+        "husky": "^9.1.7",
+        "jsdom": "^26.1.0",
+        "lint-staged": "^17.0.7",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "typescript": "^5.8.3",
+        "vite": "^6.3.5",
+        "vite-plugin-dts": "^4.5.4",
+        "vitest": "^3.2.1"
+    },
+    "keywords": [
+        "react",
+        "cascading",
+        "tree",
+        "input",
+        "headless",
+        "canvas",
+        "connection-lines"
+    ],
+    "license": "MIT",
+    "author": "chenJJ-88",
+    "homepage": "https://github.com/chenJJ-88/react-cascading-input#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/chenJJ-88/react-cascading-input.git"
+    },
+    "bugs": {
+        "url": "https://github.com/chenJJ-88/react-cascading-input/issues"
+    },
+    "engines": {
+        "node": ">=18"
+    },
+    "packageManager": "pnpm@9.15.9",
+    "sideEffects": [
+        "**/*.css"
+    ],
+    "lint-staged": {
+        "*.{ts,tsx,js,jsx}": [
+            "biome check --write --no-errors-on-unmatched"
+        ],
+        "*.{json,md,css}": [
+            "biome format --write --no-errors-on-unmatched"
+        ]
+    }
+}
