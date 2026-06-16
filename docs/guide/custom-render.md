@@ -50,23 +50,25 @@ const columns: ColumnConfig[] = [
 ];
 ```
 
-## 在 render 中自定义操作按钮
+## 在 render 中使用回调
 
-`CellRenderProps` 同时暴露了 `onAdd`、`onDelete`、`hasAdd`、`isLeaf`，你可以在 `render` 里自行排布：
+`CellRenderProps` 暴露了 `onAdd`、`onDelete`、`isLeaf` 等回调，你可以在 `render` 里灵活使用：
 
 ```tsx
-render: ({ value, onChange, title, hasAdd, onAdd, isLeaf, onDelete }) => (
-  <div>
+render: ({ value, onChange, title, onAdd, isLeaf, onDelete }) => (
+  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
     <input
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={`请输入${title}`}
     />
-    {hasAdd && <button onClick={onAdd}>+ 添加</button>}
+    <button onClick={onAdd}>+ 添加</button>
     {isLeaf && <button onClick={onDelete}>删除</button>}
   </div>
 ),
 ```
+
+> `onAdd` 始终可用，但"添加"按钮是否由组件默认渲染，取决于 `ColumnConfig.hasAdd`。`onDelete` 仅在叶子层级有意义。
 
 > 组件默认在单元格下方渲染"添加"按钮，在行末尾渲染"删除"按钮。你可以通过 `addRender` 和 `deleteRender` 自定义按钮样式，但按钮位置由组件固定控制。
 
